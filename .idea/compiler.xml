@@ -6,15 +6,43 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="calculate-PGA" />
-        <module name="common" />
+        <module name="model-file" />
+        <module name="co-performance" />
         <module name="calculate-DSDCO" />
+        <module name="co-power" />
+        <module name="model-summary" />
+        <module name="model-document" />
         <module name="model-proxy" />
+        <module name="co-log" />
+        <module name="co-system" />
+        <module name="calculate-PGA" />
+        <module name="eureka" />
+        <module name="web-gateway" />
+        <module name="co-strength" />
+        <module name="common" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="originTest" target="1.8" />
       <module name="Temp-Test" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="calculate-DSDCO" options="-parameters" />
+      <module name="calculate-PGA" options="-parameters" />
+      <module name="co-log" options="-parameters" />
+      <module name="co-performance" options="-parameters" />
+      <module name="co-power" options="-parameters" />
+      <module name="co-strength" options="-parameters" />
+      <module name="co-system" options="-parameters" />
+      <module name="common" options="-parameters" />
+      <module name="eureka" options="-parameters" />
+      <module name="model-document" options="-parameters" />
+      <module name="model-file" options="-parameters" />
+      <module name="model-proxy" options="-parameters" />
+      <module name="model-summary" options="-parameters" />
+      <module name="web-gateway" options="-parameters" />
+    </option>
   </component>
 </project>

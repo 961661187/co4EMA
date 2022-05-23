@@ -19,6 +19,7 @@
         <module name="eureka" />
         <module name="web-gateway" />
         <module name="co-strength" />
+        <module name="model-proxy" />
         <module name="common" />
       </profile>
     </annotationProcessing>
@@ -40,6 +41,7 @@
       <module name="eureka" options="-parameters" />
       <module name="model-document" options="-parameters" />
       <module name="model-file" options="-parameters" />
+      <module name="model-proxy" options="-parameters" />
       <module name="model-sample" options="-parameters" />
       <module name="model-summary" options="-parameters" />
       <module name="web-gateway" options="-parameters" />

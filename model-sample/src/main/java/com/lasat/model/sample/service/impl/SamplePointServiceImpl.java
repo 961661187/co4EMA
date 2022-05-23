@@ -15,11 +15,6 @@ public class SamplePointServiceImpl implements SamplePointService {
     private SamplePointMapper samplePointMapper;
 
     @Override
-    public SamplePoint getById(Integer id) {
-        return samplePointMapper.selectById(id);
-    }
-
-    @Override
     public void insert(SamplePoint samplePoint) {
         samplePointMapper.insert(samplePoint);
     }
@@ -27,5 +22,10 @@ public class SamplePointServiceImpl implements SamplePointService {
     @Override
     public List<SamplePoint> selectPartitions(Integer start) {
         return samplePointMapper.getPartitions(start);
+    }
+
+    @Override
+    public void clear() {
+        samplePointMapper.delete(null);
     }
 }

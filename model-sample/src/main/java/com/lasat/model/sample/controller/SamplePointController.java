@@ -25,6 +25,12 @@ public class SamplePointController {
     @GetMapping("/{startIndex}")
     public Result<List<SamplePoint>> getByPartitions(@PathVariable Integer startIndex) {
         List<SamplePoint> samplePoints = samplePointService.selectPartitions(startIndex);
-        return new Result<>(true, StatusCode.OK, "get points succeed",samplePoints);
+        return new Result<>(true, StatusCode.OK, "get points succeed", samplePoints);
+    }
+
+    @DeleteMapping
+    public Result<String> clear() {
+
+        return new Result<>(true, StatusCode.OK, "database cleared");
     }
 }

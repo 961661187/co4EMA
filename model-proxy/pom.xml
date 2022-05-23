@@ -11,13 +11,5 @@
 
     <artifactId>model-proxy</artifactId>
 
-    <dependencies>
-        <!--Java神经网络框架-->
-        <dependency>
-            <groupId>org.encog</groupId>
-            <artifactId>encog-core</artifactId>
-            <version>3.4</version>
-        </dependency>
-    </dependencies>
 
 </project>

@@ -1,0 +1,19 @@
+server:
+  port: 18001
+spring:
+  application:
+    name: modelSample
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://47.94.88.239:3306/model_proxy?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:7001/eureka
+  instance:
+    prefer-ip-address: true
+feign:
+  hystrix:
+    enabled: true

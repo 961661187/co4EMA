@@ -1,0 +1,7 @@
+# data source
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://47.94.88.239:3306/model_proxy?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver

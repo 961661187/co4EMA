@@ -15,8 +15,8 @@
     <file url="file://$PROJECT_DIR$/eureka/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/model-document/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/model-file/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/model-proxy/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/model-proxy/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/model-sample/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/model-sample/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/model-summary/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web-gateway/src/main/java" charset="UTF-8" />
   </component>

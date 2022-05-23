@@ -9,7 +9,7 @@
         <module>common</module>
         <module>calculate-PGA</module>
         <module>calculate-DSDCO</module>
-        <module>model-proxy</module>
+        <module>model-sample</module>
         <module>model-file</module>
         <module>model-document</module>
         <module>model-summary</module>

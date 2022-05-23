@@ -12,7 +12,7 @@
         <module name="co-power" />
         <module name="model-summary" />
         <module name="model-document" />
-        <module name="model-proxy" />
+        <module name="model-sample" />
         <module name="co-log" />
         <module name="co-system" />
         <module name="calculate-PGA" />
@@ -40,7 +40,7 @@
       <module name="eureka" options="-parameters" />
       <module name="model-document" options="-parameters" />
       <module name="model-file" options="-parameters" />
-      <module name="model-proxy" options="-parameters" />
+      <module name="model-sample" options="-parameters" />
       <module name="model-summary" options="-parameters" />
       <module name="web-gateway" options="-parameters" />
     </option>

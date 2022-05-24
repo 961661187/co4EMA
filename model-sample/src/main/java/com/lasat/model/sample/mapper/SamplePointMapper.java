@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface SamplePointMapper extends BaseMapper<SamplePoint> {
 
-    @Select("SELECT * FROM sample_point LIMIT #{start}, 10000")
-    List<SamplePoint> getPartitions(Integer start);
+    @Select("SELECT * FROM sample_point LIMIT #{start}, #{count}")
+    List<SamplePoint> getPartitions(Integer start, Integer count);
 }

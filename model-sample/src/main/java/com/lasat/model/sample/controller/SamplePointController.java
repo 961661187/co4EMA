@@ -22,15 +22,21 @@ public class SamplePointController {
         return new Result<>(true, StatusCode.OK, "insert succeed");
     }
 
-    @GetMapping("/{startIndex}")
-    public Result<List<SamplePoint>> getByPartitions(@PathVariable Integer startIndex) {
-        List<SamplePoint> samplePoints = samplePointService.selectPartitions(startIndex);
+    @GetMapping("/{startIndex}/{count}")
+    public Result<List<SamplePoint>> getByPartitions(@PathVariable Integer startIndex, @PathVariable Integer count) {
+        List<SamplePoint> samplePoints = samplePointService.selectPartitions(startIndex, count);
         return new Result<>(true, StatusCode.OK, "get points succeed", samplePoints);
     }
 
     @DeleteMapping
     public Result<String> clear() {
-
+        samplePointService.clear();
         return new Result<>(true, StatusCode.OK, "database cleared");
+    }
+
+    @GetMapping
+    public Result<List<SamplePoint>> getAll() {
+        List<SamplePoint> samplePoints = samplePointService.getAll();
+        return new Result<>(true, StatusCode.OK, "get points succeed", samplePoints);
     }
 }

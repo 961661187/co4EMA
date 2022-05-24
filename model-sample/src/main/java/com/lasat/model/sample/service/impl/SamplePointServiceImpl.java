@@ -20,12 +20,17 @@ public class SamplePointServiceImpl implements SamplePointService {
     }
 
     @Override
-    public List<SamplePoint> selectPartitions(Integer start) {
-        return samplePointMapper.getPartitions(start);
+    public List<SamplePoint> selectPartitions(Integer start, Integer count) {
+        return samplePointMapper.getPartitions(start, count);
     }
 
     @Override
     public void clear() {
         samplePointMapper.delete(null);
+    }
+
+    @Override
+    public List<SamplePoint> getAll() {
+        return samplePointMapper.selectList(null);
     }
 }

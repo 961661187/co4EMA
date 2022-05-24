@@ -15,6 +15,7 @@
         <module name="model-sample" />
         <module name="co-log" />
         <module name="co-system" />
+        <module name="common-db" />
         <module name="calculate-PGA" />
         <module name="eureka" />
         <module name="web-gateway" />
@@ -38,6 +39,7 @@
       <module name="co-strength" options="-parameters" />
       <module name="co-system" options="-parameters" />
       <module name="common" options="-parameters" />
+      <module name="common-db" options="-parameters" />
       <module name="eureka" options="-parameters" />
       <module name="model-document" options="-parameters" />
       <module name="model-file" options="-parameters" />

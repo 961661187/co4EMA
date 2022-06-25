@@ -12,7 +12,7 @@ package com.lasat.ga.problem.problemtrait
 trait Problem[T] extends Serializable {
 
   /**
-   * get the score of individual
+   * get the score of individual, the GA handler will get the individual with max score
    *
    * @param variableList variable list of an individual without normalization
    * @return score of the individual
@@ -60,4 +60,11 @@ trait Problem[T] extends Serializable {
    * @return
    */
   def getProblemName: String
+
+  /**
+   * check whether given variables meet constraint
+   * @param variable normalized variables
+   * @return is variable meet constrains
+   */
+  def checkConstraint(variable: Array[T]): Boolean
 }

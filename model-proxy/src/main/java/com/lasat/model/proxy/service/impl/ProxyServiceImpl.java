@@ -36,12 +36,12 @@ public class ProxyServiceImpl implements ProxyService {
     private final String NETWORK_NAME = "network_proxy";
 
     @Override
-    public Double getTr(SamplePoint samplePoint) {
+    public double getTr(SamplePoint samplePoint) {
         if (network == null) {
             network = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File(NETWORK_NAME));
         }
         if (network == null) {
-            return null;
+            return -1;
         } else {
             double[] data = getData(samplePoint);
             MLData input = new BasicMLData(data);
@@ -98,6 +98,7 @@ public class ProxyServiceImpl implements ProxyService {
         do {
             train.iteration();
             epoch++;
+            System.out.println("The error of current neural network is " + train.getError());
         } while (train.getError() > 0.0001 && epoch <= 10000);
 
         //save proxy information to database
@@ -146,10 +147,10 @@ public class ProxyServiceImpl implements ProxyService {
     }
 
     private double normalize(double data) {
-        return (data - 0.4) / 1.3;
+        return (data - 0.15) / 5.55;
     }
 
     private double inverseNormalize(double data) {
-        return data * 1.3 + 0.4;
+        return data * 5.55 + 0.15;
     }
 }

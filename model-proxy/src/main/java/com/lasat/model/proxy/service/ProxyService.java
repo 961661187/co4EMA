@@ -11,7 +11,7 @@ public interface ProxyService {
      * @param samplePoint sample point data
      * @return the step response time
      */
-    Double getTr(SamplePoint samplePoint);
+    double getTr(SamplePoint samplePoint);
 
     /**
      * retrain the neural network

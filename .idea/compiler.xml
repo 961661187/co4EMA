@@ -6,26 +6,31 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="model-file" />
-        <module name="co-performance" />
-        <module name="calculate-DSDCO" />
         <module name="co-power" />
-        <module name="model-summary" />
-        <module name="model-document" />
+        <module name="co-performance" />
         <module name="model-sample" />
+        <module name="model-summary" />
+        <module name="model-proxy" />
+        <module name="model-file" />
+        <module name="common" />
         <module name="co-log" />
         <module name="co-system" />
+        <module name="reducer-dsdco-disciplinary-1" />
         <module name="common-db" />
         <module name="calculate-PGA" />
+        <module name="reducer-dsdco-disciplinary-2" />
         <module name="eureka" />
         <module name="web-gateway" />
+        <module name="reducer-dsdco-system" />
+        <module name="model-document" />
+        <module name="calculate-DSDCO" />
         <module name="co-strength" />
-        <module name="model-proxy" />
-        <module name="common" />
+        <module name="co-task" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="originTest" target="1.8" />
+      <module name="reducer-dsdco-disciplnary-1" target="1.8" />
       <module name="Temp-Test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
@@ -38,6 +43,7 @@
       <module name="co-power" options="-parameters" />
       <module name="co-strength" options="-parameters" />
       <module name="co-system" options="-parameters" />
+      <module name="co-task" options="-parameters" />
       <module name="common" options="-parameters" />
       <module name="common-db" options="-parameters" />
       <module name="eureka" options="-parameters" />
@@ -46,6 +52,10 @@
       <module name="model-proxy" options="-parameters" />
       <module name="model-sample" options="-parameters" />
       <module name="model-summary" options="-parameters" />
+      <module name="reducer-dsdco-disciplinary-1" options="-parameters" />
+      <module name="reducer-dsdco-disciplinary-2" options="-parameters" />
+      <module name="reducer-dsdco-disciplnary-1" options="-parameters" />
+      <module name="reducer-dsdco-system" options="-parameters" />
       <module name="web-gateway" options="-parameters" />
     </option>
   </component>

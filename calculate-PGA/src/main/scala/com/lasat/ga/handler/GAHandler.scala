@@ -20,7 +20,7 @@ class GAHandler[T: ClassTag](val encoder: Encoder[T], val problem: Problem[T]) e
   //the maximum count of chromosome in population
   var popSize: Int = 50 * problem.getVar.length
   //maximum iterations
-  var maxIterNum: Int = 100
+  var maxIterNum: Int = 300
   //current iterations
   var generation: Int = 1
   //the length of gene

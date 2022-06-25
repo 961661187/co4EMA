@@ -25,6 +25,9 @@
         <module>reducer-dsdco-system</module>
         <module>reducer-dsdco-disciplinary-2</module>
         <module>reducer-dsdco-disciplinary-1</module>
+        <module>test-dsdco-system</module>
+        <module>test-dsdco-disciplinary-2</module>
+        <module>test-dsdco-disciplinary-1</module>
         <module>co-task</module>
     </modules>
 

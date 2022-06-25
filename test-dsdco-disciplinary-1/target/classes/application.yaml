@@ -1,8 +1,8 @@
 server:
-  port: 19103
+  port: 19102
 spring:
   application:
-    name: testDisciplinaryCalculator2
+    name: testDisciplinaryCalculator1
 eureka:
   client:
     service-url:

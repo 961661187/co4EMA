@@ -8,22 +8,25 @@
         <outputRelativeToContentRoot value="true" />
         <module name="co-power" />
         <module name="co-performance" />
+        <module name="calculate-DSDCO" />
+        <module name="test-dsdco-disciplinary-2" />
         <module name="model-sample" />
         <module name="model-summary" />
+        <module name="test-dsdco-disciplinary-1" />
         <module name="model-proxy" />
         <module name="model-file" />
-        <module name="common" />
+        <module name="test-dsdco-system" />
         <module name="co-log" />
         <module name="co-system" />
-        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="web-gateway" />
         <module name="common-db" />
         <module name="calculate-PGA" />
-        <module name="reducer-dsdco-disciplinary-2" />
-        <module name="eureka" />
-        <module name="web-gateway" />
         <module name="reducer-dsdco-system" />
+        <module name="eureka" />
+        <module name="reducer-dsdco-disciplinary-2" />
+        <module name="reducer-dsdco-disciplinary-1" />
         <module name="model-document" />
-        <module name="calculate-DSDCO" />
+        <module name="common" />
         <module name="co-strength" />
         <module name="co-task" />
       </profile>
@@ -56,6 +59,9 @@
       <module name="reducer-dsdco-disciplinary-2" options="-parameters" />
       <module name="reducer-dsdco-disciplnary-1" options="-parameters" />
       <module name="reducer-dsdco-system" options="-parameters" />
+      <module name="test-dsdco-disciplinary-1" options="-parameters" />
+      <module name="test-dsdco-disciplinary-2" options="-parameters" />
+      <module name="test-dsdco-system" options="-parameters" />
       <module name="web-gateway" options="-parameters" />
     </option>
   </component>

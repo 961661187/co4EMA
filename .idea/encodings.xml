@@ -23,6 +23,9 @@
     <file url="file://$PROJECT_DIR$/reducer-dsdco-disciplinary-1/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/reducer-dsdco-disciplinary-2/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/reducer-dsdco-system/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test-dsdco-disciplinary-1/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test-dsdco-disciplinary-2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test-dsdco-system/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web-gateway/src/main/java" charset="UTF-8" />
   </component>
 </project>

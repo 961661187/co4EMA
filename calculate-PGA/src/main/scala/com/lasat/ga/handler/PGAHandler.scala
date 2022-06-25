@@ -18,9 +18,9 @@ import scala.util.Random
  */
 class PGAHandler[T: ClassTag](val encoder: Encoder[T], val problem: Problem[T]) {
   //generation iterator
-  var genIterNum: Int = 5
+  var genIterNum: Int = 10
   //island number
-  var islandNum: Int = 3
+  var islandNum: Int = 4
   //population size of each island
   var islandPopSize: Int = 50 * problem.getVar.length
   //generation iterator number of each island

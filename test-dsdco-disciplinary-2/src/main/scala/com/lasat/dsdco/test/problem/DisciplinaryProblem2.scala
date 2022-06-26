@@ -5,11 +5,13 @@ import com.lasat.ga.problem.problemtrait.Problem
 object DisciplinaryProblem2 extends Problem[Double] {
 
   //the upper limit of each variables
-  val lowerLim: Array[Double] = Array(0, -100)
+  val lowerLim: Array[Double] = Array(0.0, -25.0)
   //the lower limit of each variables
-  val upperLim: Array[Double] = Array(100, 100)
+  val upperLim: Array[Double] = Array(10.0, -15.0)
   //get the closet point in the region to target point
   var targetVal: Array[Double] = _
+  //threshold of convergence condition
+  val convergenceConditionThreshold = 0.00101
 
   /**
    * get the score of individual, the GA handler will get the individual with max score
@@ -104,6 +106,6 @@ object DisciplinaryProblem2 extends Problem[Double] {
     }
     val constraints1 = 0.1 * Math.pow((1.5 * x(0) - 20), 2) - 70 - x(1)
     val constraints2 = 50 / (x(0) + 0.1) - 40 - x(1)
-    constraints1 <= 0 && constraints2 <= 0
+    constraints1 <= convergenceConditionThreshold && constraints2 <= convergenceConditionThreshold
   }
 }

@@ -70,8 +70,7 @@ public class DsdcoTarget {
             DsdcoTarget other = (DsdcoTarget) obj;
             Double[] otherVar = other.getVariables();
             for (int i = 0; i < otherVar.length; i++) {
-                // ensure the accuracy change during serialization will not affect the judgement
-                if (Math.abs(otherVar[i] - variables[i]) > 0.001) return false;
+                if (!otherVar[i].equals(variables[i])) return false;
             }
             return true;
         } else {

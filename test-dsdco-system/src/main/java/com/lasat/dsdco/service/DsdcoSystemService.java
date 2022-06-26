@@ -54,8 +54,8 @@ public class DsdcoSystemService {
     private final int DISCIPLINARY_COUNT = 2;
 
     //origin upper and lower limit of the region
-    private final Double[] originLowerLim = new Double[]{0.0, -100.0};
-    private final Double[] originUpperLim = new Double[]{100.0, 100.0};
+    private final Double[] originLowerLim = new Double[]{0.0, -25.0};
+    private final Double[] originUpperLim = new Double[]{10.0, -15.0};
 
     @Autowired
     private RegionCalculateService regionCalculateService;
@@ -72,7 +72,6 @@ public class DsdcoSystemService {
         } catch (MQClientException e) {
             e.printStackTrace();
         }
-        consumer.setMessageModel(MessageModel.BROADCASTING);
         consumer.registerMessageListener((MessageListenerConcurrently) (messages, consumeConcurrentlyContext) -> {
             for (MessageExt message : messages) {
                 // the closest point of a disciplinary calculator
@@ -113,8 +112,8 @@ public class DsdcoSystemService {
     public void startTask() {
         // initialize the region
         DsdcoRegion originRegion = new DsdcoRegion();
-        originRegion.setLowerLim(originLowerLim);
-        originRegion.setUpperLim(originUpperLim);
+        originRegion.setLowerLim(Arrays.copyOf(originLowerLim, originLowerLim.length));
+        originRegion.setUpperLim(Arrays.copyOf(originUpperLim, originUpperLim.length));
 
         // get the regions best point
         OptimizationResult originResult = regionCalculateService.getResultInRegion(originRegion);
@@ -126,7 +125,7 @@ public class DsdcoSystemService {
         originRegion.setBestVariables(variablesOfRegion);
 
         // add the origin region to priority queue
-        priorityQueue.add(originRegion);
+        priorityQueue.offer(originRegion);
         currentRegion = originRegion;
 
         // send the region to message queue
@@ -174,9 +173,14 @@ public class DsdcoSystemService {
                 System.out.println("[ERROR]: The task has been calculated 500 times, but don't get a result");
             } else {
                 currentRegion = splitAndSelectRegion(maxDistance);
+                if (currentRegion == null) {
+                    System.out.println("[ERROR]: No suitable result!!");
+                    return;
+                }
                 // prepare for the next calculation
                 iteratorCount++;
                 currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
+                currentScore = - currentRegion.getMinTargetFunValue();
                 closestPointMap.clear();
                 regionCalculateService.sendTarget2Disciplinary(currentTarget);
                 printMessage();
@@ -248,7 +252,7 @@ public class DsdcoSystemService {
             System.out.println("New Region add to the priority queue: ");
             System.out.println(Arrays.toString(region.getUpperLim()));
             System.out.println(Arrays.toString(region.getLowerLim()));
-            priorityQueue.add(region);
+            priorityQueue.offer(region);
             System.out.println("Region priority queue size: " + priorityQueue.size());
         }
     }
@@ -264,8 +268,7 @@ public class DsdcoSystemService {
         Double[] lowerLim = region.getLowerLim();
 
         for (int i = 0; i < VARIABLES_COUNT; i++) {
-            double threshold = Math.max((originUpperLim[i] - originLowerLim[i]) * 0.01, 0.01);
-            if (upperLim[i] - lowerLim[i] <= threshold) return false;
+            if (upperLim[i] - lowerLim[i] <= 0) return false;
         }
 
         return true;

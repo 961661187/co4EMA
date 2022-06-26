@@ -16,10 +16,11 @@ object DisciplinaryHandler1 {
     } else {
       DisciplinaryProblem1.targetVal = targetVal
 
+      // the compute resource is limited, so use GA here instead
       val pgaHandler = new PGAHandler[Double](DoubleArrEncoder, DisciplinaryProblem1)
       var gaResult : GAResult[Double] = null;
 
-      for (_ <- 0 until 5) {
+      for (_ <- 0 until 3) {
         val tempResult: GAResult[Double] = pgaHandler.getResult
         if (gaResult == null || gaResult.score < tempResult.score)
           gaResult = tempResult

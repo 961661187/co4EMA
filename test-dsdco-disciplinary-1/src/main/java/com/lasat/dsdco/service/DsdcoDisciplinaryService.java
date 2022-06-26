@@ -37,7 +37,7 @@ public class DsdcoDisciplinaryService {
     private Long currentTaskId = null;
     private Integer currentIteratorCount = null;
 
-    private final String CURRENT_DISCIPLINARY_NAME = "reducer-disciplinary-1";
+    private final String CURRENT_DISCIPLINARY_NAME = "test-disciplinary-1";
 
     /**
      * initialize the consumer of disciplinary

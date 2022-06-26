@@ -13,15 +13,14 @@ object SystemHandler {
     SystemProblem.lowerLim = lowerLim
 
     // get the maximum value and its variables in this region by parallel genetic algorithm
-    val pgaHandler = new PGAHandler[Double](DoubleArrEncoder, SystemProblem)
-    pgaHandler.setAccuracy(20, 4, 150, 500, 0.25)
-    val tempResult: GAResult[Double] = pgaHandler.getResult
+    /*val pgaHandler = new PGAHandler[Double](DoubleArrEncoder, SystemProblem)
+    val tempResult: GAResult[Double] = pgaHandler.getResult*/
     val result = new ResultInDouble
 
 
     // change the result into the class that can be get by Java easily
-    result.score = tempResult.score
-    result.variables = tempResult.variables
+    result.score = .0
+    result.variables = lowerLim
     result
   }
 }

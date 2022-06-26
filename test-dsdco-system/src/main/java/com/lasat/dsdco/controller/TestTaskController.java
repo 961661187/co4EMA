@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/test")
-public class ReducerTaskController {
+public class TestTaskController {
 
     @Autowired
     private DsdcoSystemService dsdcoSystemService;
 
-    // TODO The fucking debug has not been finished
     @GetMapping("/commit/{taskId}")
     public Result<String> commitReducerTask(@PathVariable Long taskId) {
         dsdcoSystemService.closeTask();

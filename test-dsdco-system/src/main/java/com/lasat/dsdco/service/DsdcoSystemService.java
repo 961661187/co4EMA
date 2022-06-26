@@ -104,7 +104,6 @@ public class DsdcoSystemService {
     }
 
 
-    // TODO The fucking debug has not been finished
     /**
      * start the task
      */

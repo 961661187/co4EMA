@@ -8,7 +8,6 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -51,7 +50,7 @@ public class DsdcoSystemService {
     private final int DISCIPLINARY_COUNT = 2;
 
     //origin upper and lower limit of the region
-    private final Double[] originLowerLim = new Double[]{3.5, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
+    private final Double[] originLowerLim = new Double[]{2.6, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
     private final Double[] originUpperLim = new Double[]{3.6, 0.8, 28.0, 8.3, 8.3, 3.9, 5.5};
 
     @Autowired
@@ -69,7 +68,6 @@ public class DsdcoSystemService {
         } catch (MQClientException e) {
             e.printStackTrace();
         }
-        consumer.setMessageModel(MessageModel.BROADCASTING);
         consumer.registerMessageListener((MessageListenerConcurrently) (messages, consumeConcurrentlyContext) -> {
             for (MessageExt message : messages) {
                 // the closest point of a disciplinary calculator
@@ -102,7 +100,6 @@ public class DsdcoSystemService {
     }
 
 
-    // TODO The fucking debug has not been finished
     /**
      * start the task
      */
@@ -110,8 +107,8 @@ public class DsdcoSystemService {
     public void startTask() {
         // initialize the region
         DsdcoRegion originRegion = new DsdcoRegion();
-        originRegion.setLowerLim(new Double[]{3.5, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0});
-        originRegion.setUpperLim(new Double[]{3.6, 0.8, 28.0, 8.3, 8.3, 3.9, 5.5});
+        originRegion.setLowerLim(Arrays.copyOf(originLowerLim, originLowerLim.length));
+        originRegion.setUpperLim(Arrays.copyOf(originUpperLim, originUpperLim.length));
 
         // get the regions best point
         OptimizationResult originResult = regionCalculateService.getResultInRegion(originRegion);
@@ -171,9 +168,14 @@ public class DsdcoSystemService {
                 System.out.println("[ERROR]: The task has been calculated 500 times, but don't get a result");
             } else {
                 currentRegion = splitAndSelectRegion(maxDistance);
+                if (currentRegion == null) {
+                    System.out.println("[ERROR]: No suitable result!!");
+                    return;
+                }
                 // prepare for the next calculation
                 iteratorCount++;
                 currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
+                currentScore = - currentRegion.getMinTargetFunValue();
                 closestPointMap.clear();
                 regionCalculateService.sendTarget2Disciplinary(currentTarget);
                 printMessage();
@@ -261,8 +263,7 @@ public class DsdcoSystemService {
         Double[] lowerLim = region.getLowerLim();
 
         for (int i = 0; i < VARIABLES_COUNT; i++) {
-            double threshold = Math.max((originUpperLim[i] - originLowerLim[i]) * 0.01, 0.01);
-            if (upperLim[i] - lowerLim[i] <= threshold) return false;
+            if (upperLim[i] - lowerLim[i] <= 0) return false;
         }
 
         return true;
@@ -313,19 +314,6 @@ public class DsdcoSystemService {
     @PreDestroy
     public void closeConsumer() {
         consumer.shutdown();
-    }
-
-    /**
-     * convert the optimization result to dsdco target
-     *
-     * @return the dsdco target converted from optimization result
-     */
-    private DsdcoTarget convertOptimizationResult2DsdcoTarget(OptimizationResult result) {
-        Double[] variables = new Double[result.getVariables().length];
-        for (int i = 0; i < variables.length; i++) {
-            variables[i] = result.getVariables()[i];
-        }
-        return new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, variables);
     }
 
     private void printMessage() {

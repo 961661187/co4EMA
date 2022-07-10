@@ -83,7 +83,7 @@ object DisciplinaryProblem2 extends Problem[Double] {
     }
     // in order to get the minimum distance, take the negative value of distance as score
     // because PGA will get the maximum score in region
-    -Math.sqrt(result)
+    -result
   }
 
   /**

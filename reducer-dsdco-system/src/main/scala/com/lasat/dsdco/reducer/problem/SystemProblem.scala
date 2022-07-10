@@ -88,7 +88,7 @@ object SystemProblem extends Problem[Double] {
    *
    * @return
    */
-  override def getProblemName: String = "reducer-optimization"
+  override def getProblemName: String = "reducer-optimization-system"
 
   /**
    * check whether given variables meet constraint

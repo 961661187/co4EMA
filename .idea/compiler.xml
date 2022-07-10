@@ -7,28 +7,28 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="co-power" />
-        <module name="co-performance" />
-        <module name="calculate-DSDCO" />
+        <module name="model-document" />
         <module name="model-sample" />
         <module name="model-summary" />
-        <module name="model-document" />
         <module name="test-dsdco-disciplinary-2" />
         <module name="model-proxy" />
         <module name="model-file" />
+        <module name="common" />
         <module name="test-dsdco-system" />
         <module name="co-log" />
         <module name="test-dsdco-disciplinary-1" />
-        <module name="web-gateway" />
+        <module name="reducer-dsdco-disciplinary-1" />
         <module name="common-db" />
         <module name="calculate-PGA" />
-        <module name="reducer-dsdco-system" />
-        <module name="eureka" />
         <module name="reducer-dsdco-disciplinary-2" />
-        <module name="reducer-dsdco-disciplinary-1" />
-        <module name="co-strength" />
-        <module name="common" />
-        <module name="co-system" />
         <module name="co-task" />
+        <module name="co-performance" />
+        <module name="eureka" />
+        <module name="web-gateway" />
+        <module name="reducer-dsdco-system" />
+        <module name="co-strength" />
+        <module name="calculate-DSDCO" />
+        <module name="co-system" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

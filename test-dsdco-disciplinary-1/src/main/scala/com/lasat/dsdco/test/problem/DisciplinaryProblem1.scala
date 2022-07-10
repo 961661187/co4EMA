@@ -83,7 +83,7 @@ object DisciplinaryProblem1 extends Problem[Double] {
     }
     // in order to get the minimum distance, take the negative value of distance as score
     // because PGA will get the maximum score in region
-    -Math.sqrt(result)
+    - result
   }
 
   /**
@@ -100,7 +100,6 @@ object DisciplinaryProblem1 extends Problem[Double] {
    * @return is variable meet constrains
    */
   override def checkConstraint(x: Array[Double]): Boolean = {
-    // the constraints is set in disciplinary model, as a result, in system model, only upper and lower limit is checked
     for (i <- 0 until 2) {
       if (x(i) > upperLim(i) || x(i) < lowerLim(i)) return false
     }

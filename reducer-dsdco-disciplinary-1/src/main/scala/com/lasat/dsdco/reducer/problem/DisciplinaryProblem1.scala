@@ -10,6 +10,8 @@ object DisciplinaryProblem1 extends Problem[Double] {
   val upperLim: Array[Double] = Array(3.6, 0.8, 28, 8.3, 8.3, 3.9, 5.5)
   //get the closet point in the region to target point
   var targetVal: Array[Double] = _
+  //threshold of convergence condition
+  val convergenceConditionThreshold = 0.00101
 
   /**
    * get the score of individual, the GA handler will get the individual with max score
@@ -81,7 +83,7 @@ object DisciplinaryProblem1 extends Problem[Double] {
     }
     // in order to get the minimum distance, take the negative value of distance as score
     // because PGA will get the maximum score in region
-    -Math.sqrt(result)
+    - result
   }
 
   /**
@@ -89,7 +91,7 @@ object DisciplinaryProblem1 extends Problem[Double] {
    *
    * @return
    */
-  override def getProblemName: String = "reducer-optimization"
+  override def getProblemName: String = "reducer-optimization-disciplinary-1"
 
   /**
    * check whether given variables meet constraint
@@ -108,6 +110,6 @@ object DisciplinaryProblem1 extends Problem[Double] {
     val c4 = 1.93 * Math.pow(x(4), 3) / (x(1) * x(2) * Math.pow(x(6), 4)) - 1
     val c5 = (Math.sqrt(Math.pow(745 * x(3) / (x(1) * x(2)), 2) + 16.9e6) / (0.1 * Math.pow(x(5), 3))) - 1100
     val c6 = (Math.sqrt(Math.pow(745 * x(4) / (x(1) * x(2)), 2) + 157.5e6) / (0.1 * Math.pow(x(6), 3))) - 850
-    c1 <= 0.002 && c2 <= 0.002 && c3 <= 0.002 && c4 <= 0.002 && c5 <= 0.002 && c6 <= 0.002
+    c1 <= convergenceConditionThreshold && c2 <= convergenceConditionThreshold && c3 <= convergenceConditionThreshold && c4 <= convergenceConditionThreshold && c5 <= convergenceConditionThreshold && c6 <= convergenceConditionThreshold
   }
 }

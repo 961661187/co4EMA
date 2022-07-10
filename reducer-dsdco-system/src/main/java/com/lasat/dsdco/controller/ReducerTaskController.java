@@ -19,9 +19,10 @@ public class ReducerTaskController {
 
     // TODO The fucking debug has not been finished
     @GetMapping("/commit/{taskId}")
-    public Result<String> commitReducerTask(@PathVariable Long taskId) {
+    public Result<String> commitReducerTask(@PathVariable Long taskId) throws InterruptedException {
         dsdcoSystemService.closeTask();
         dsdcoSystemService.setTaskId(taskId);
+        Thread.sleep(500);
         dsdcoSystemService.startTask();
         return new Result<>(true, StatusCode.OK, "task commit succeed");
     }

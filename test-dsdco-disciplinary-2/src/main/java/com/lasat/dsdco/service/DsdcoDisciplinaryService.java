@@ -13,9 +13,8 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.lasat.dsdco.test.bean.ResultInDouble;
-import com.lasat.dsdco.test.handler.DisciplinaryHandler2;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -38,6 +37,9 @@ public class DsdcoDisciplinaryService {
     private Integer currentIteratorCount = null;
 
     private final String CURRENT_DISCIPLINARY_NAME = "test-disciplinary-2";
+
+    @Autowired
+    private MatlabService4Disciplinary2 matlabService4Disciplinary2;
 
     /**
      * initialize the consumer of disciplinary
@@ -132,8 +134,7 @@ public class DsdcoDisciplinaryService {
         for (int i = 0; i < targetVal.length; i++) {
             targetVal[i] = targetVarOrigin[i];
         }
-        ResultInDouble closetPoint = DisciplinaryHandler2.getClosetPoint(targetVal);
-        OptimizationResult optimizationResult = new OptimizationResult(closetPoint.score(), closetPoint.variables());
+        OptimizationResult optimizationResult = matlabService4Disciplinary2.getClosetPoint(targetVal);
         return convertOptimizationResult2DsdcoTarget(optimizationResult);
     }
 

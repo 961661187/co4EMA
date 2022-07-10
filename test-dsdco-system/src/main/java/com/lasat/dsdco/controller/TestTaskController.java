@@ -18,8 +18,10 @@ public class TestTaskController {
     private DsdcoSystemService dsdcoSystemService;
 
     @GetMapping("/commit/{taskId}")
-    public Result<String> commitReducerTask(@PathVariable Long taskId) {
+    public Result<String> commitReducerTask(@PathVariable Long taskId) throws InterruptedException {
         dsdcoSystemService.closeTask();
+        // prevent the effect of non-order messages
+        Thread.sleep(50);
         dsdcoSystemService.setTaskId(taskId);
         dsdcoSystemService.startTask();
         return new Result<>(true, StatusCode.OK, "task commit succeed");

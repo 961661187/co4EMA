@@ -8,7 +8,6 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -17,10 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -52,10 +48,11 @@ public class DsdcoSystemService {
     // the number of variables
     private final int VARIABLES_COUNT = 2;
     private final int DISCIPLINARY_COUNT = 2;
+    private final int maxIteratorCount = 10000;
 
     //origin upper and lower limit of the region
-    private final Double[] originLowerLim = new Double[]{0.0, -25.0};
-    private final Double[] originUpperLim = new Double[]{10.0, -15.0};
+    private final Double[] originLowerLim = new Double[]{0.0, -100.0};
+    private final Double[] originUpperLim = new Double[]{100.0, 100.0};
 
     @Autowired
     private RegionCalculateService regionCalculateService;
@@ -87,9 +84,17 @@ public class DsdcoSystemService {
                         && dsdcoTarget.getTaskId().equals(currentTaskId)
                         && dsdcoTarget.getIteratorCount().equals(iteratorCount)
                         && !closestPointMap.containsKey(dsdcoTarget.getDisciplinaryName())) {
-                    closestPointMap.put(dsdcoTarget.getDisciplinaryName(), dsdcoTarget);
-                    System.out.println("Point map has been updated: " + closestPointMap);
-                    checkDisciplinaryResult();
+                    // only one thread can operate the region
+                    lock.lock();
+                    try {
+                        closestPointMap.put(dsdcoTarget.getDisciplinaryName(), dsdcoTarget);
+                        System.out.println("Point map has been updated: " + closestPointMap);
+                        checkDisciplinaryResult();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        lock.unlock();
+                    }
                 } else {
                     System.out.println("Duplicate message received: " + dsdcoTarget);
                 }
@@ -150,45 +155,36 @@ public class DsdcoSystemService {
      * else, split and select best region to calculate
      */
     private void checkDisciplinaryResult() {
-        try {
-            // only one thread can operate the region
-            lock.lock();
-            if (closestPointMap.size() < DISCIPLINARY_COUNT) return;
-            int constraintMeetCount = 0;
-            double maxDistance = 0;
-            for (Map.Entry<String, DsdcoTarget> disPointEntry : closestPointMap.entrySet()) {
-                DsdcoTarget disPoint = disPointEntry.getValue();
-                if (!disPoint.equals(currentTarget)) {
-                    maxDistance = Math.max(maxDistance, getDistance(disPoint, currentTarget));
-                } else {
-                    constraintMeetCount++;
-                }
-            }
-
-            if (constraintMeetCount == DISCIPLINARY_COUNT) {
-                System.out.println("the result is " + currentTarget.toString() + ", score: " + currentScore);
-                closeTask();
-            } else if (currentTarget.getIteratorCount() >= 500) {
-                System.out.println("[ERROR]: The task has been calculated 500 times, but don't get a result");
+        if (closestPointMap.size() < DISCIPLINARY_COUNT) return;
+        int constraintMeetCount = 0;
+        double maxDistance = 0;
+        for (Map.Entry<String, DsdcoTarget> disPointEntry : closestPointMap.entrySet()) {
+            DsdcoTarget disPoint = disPointEntry.getValue();
+            if (!disPoint.equals(currentTarget)) {
+                maxDistance = Math.max(maxDistance, getDistance(disPoint, currentTarget));
             } else {
-                currentRegion = splitAndSelectRegion(maxDistance);
-                if (currentRegion == null) {
-                    System.out.println("[ERROR]: No suitable result!!");
-                    return;
-                }
-                // prepare for the next calculation
-                iteratorCount++;
-                currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
-                currentScore = - currentRegion.getMinTargetFunValue();
-                closestPointMap.clear();
-                regionCalculateService.sendTarget2Disciplinary(currentTarget);
-                printMessage();
+                constraintMeetCount++;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // ensure the lock will be free even exceptions occurred
-            lock.unlock();
+        }
+
+        if (constraintMeetCount == DISCIPLINARY_COUNT) {
+            System.out.println("the result is " + currentTarget.toString() + ", score: " + currentScore);
+            closeTask();
+        } else if (currentTarget.getIteratorCount() >= maxIteratorCount) {
+            System.out.println("[ERROR]: The task has been calculated too many times, but don't get a result");
+        } else {
+            currentRegion = splitAndSelectRegion(maxDistance);
+            if (currentRegion == null) {
+                System.out.println("[ERROR]: No suitable result!!");
+                return;
+            }
+            // prepare for the next calculation
+            iteratorCount++;
+            currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
+            currentScore = -currentRegion.getMinTargetFunValue();
+            closestPointMap.clear();
+            regionCalculateService.sendTarget2Disciplinary(currentTarget);
+            printMessage();
         }
     }
 
@@ -318,19 +314,6 @@ public class DsdcoSystemService {
     @PreDestroy
     public void closeConsumer() {
         consumer.shutdown();
-    }
-
-    /**
-     * convert the optimization result to dsdco target
-     *
-     * @return the dsdco target converted from optimization result
-     */
-    private DsdcoTarget convertOptimizationResult2DsdcoTarget(OptimizationResult result) {
-        Double[] variables = new Double[result.getVariables().length];
-        for (int i = 0; i < variables.length; i++) {
-            variables[i] = result.getVariables()[i];
-        }
-        return new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, variables);
     }
 
     private void printMessage() {

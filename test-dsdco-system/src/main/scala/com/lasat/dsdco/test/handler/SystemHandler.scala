@@ -17,9 +17,8 @@ object SystemHandler {
     val tempResult: GAResult[Double] = pgaHandler.getResult*/
     val result = new ResultInDouble
 
-
     // change the result into the class that can be get by Java easily
-    result.score = .0
+    result.score = - lowerLim(0)
     result.variables = lowerLim
     result
   }

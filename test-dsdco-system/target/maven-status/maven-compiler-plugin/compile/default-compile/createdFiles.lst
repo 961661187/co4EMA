@@ -1,0 +1,5 @@
+com\lasat\dsdco\service\BestPointService.class
+com\lasat\dsdco\service\RegionCalculateService.class
+com\lasat\dsdco\controller\TestTaskController.class
+com\lasat\dsdco\TestDsdcoApplication.class
+com\lasat\dsdco\service\DsdcoSystemService.class

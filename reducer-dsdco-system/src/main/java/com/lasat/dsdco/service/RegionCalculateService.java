@@ -1,15 +1,14 @@
 package com.lasat.dsdco.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lasat.dsdco.bean.DsdcoRegion;
 import com.lasat.dsdco.bean.DsdcoTarget;
 import com.lasat.dsdco.bean.OptimizationResult;
-import com.lasat.dsdco.reducer.bean.ResultInDouble;
-import com.lasat.dsdco.reducer.handler.SystemHandler;
 import com.lasat.dsdco.util.JsonUtil;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.message.Message;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +22,9 @@ public class RegionCalculateService {
     // the message producer of system optimization
     private final ResourceBundle mqConfig = ResourceBundle.getBundle("mqConfig");
     private final DefaultMQProducer producer = new DefaultMQProducer(mqConfig.getString("producerGroup"));
+
+    @Autowired
+    BestPointService bestPointService;
 
     /**
      * initialize the producer
@@ -58,13 +60,11 @@ public class RegionCalculateService {
             lowerLim[i] = dsdcoRegion.getLowerLim()[i];
         }
 
-        ResultInDouble resultInRegion = SystemHandler.getResultInRegion(upperLim, lowerLim);
-        double score = resultInRegion.score();
-        double[] variables = resultInRegion.variables();
+        OptimizationResult resultInRegion = bestPointService.getResultInRegion(upperLim, lowerLim);
 
         // parallel genetic algorithm can get the max score in given region
         // as a result, we set the calculate score as -mass, so the real min mass is -score
-        return new OptimizationResult(-score, variables);
+        return new OptimizationResult(-resultInRegion.getScore(), resultInRegion.getVariables());
     }
 
     /**

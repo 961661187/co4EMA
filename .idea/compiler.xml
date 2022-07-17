@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <option name="BUILD_PROCESS_HEAP_SIZE" value="2048" />
     <annotationProcessing>
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -8,33 +9,30 @@
         <outputRelativeToContentRoot value="true" />
         <module name="co-power" />
         <module name="model-document" />
-        <module name="calculate-DSDCO" />
         <module name="model-sample" />
         <module name="model-summary" />
         <module name="test-dsdco-disciplinary-2" />
         <module name="model-proxy" />
         <module name="model-file" />
+        <module name="common" />
         <module name="test-dsdco-system" />
         <module name="co-log" />
         <module name="test-dsdco-disciplinary-1" />
-        <module name="web-gateway" />
+        <module name="reducer-dsdco-disciplinary-1" />
         <module name="common-db" />
-        <module name="calculate-PGA" />
-        <module name="reducer-dsdco-system" />
+        <module name="reducer-dsdco-disciplinary-2" />
+        <module name="co-task" />
         <module name="co-performance" />
         <module name="eureka" />
-        <module name="reducer-dsdco-disciplinary-2" />
-        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="web-gateway" />
+        <module name="reducer-dsdco-system" />
         <module name="co-strength" />
-        <module name="common" />
+        <module name="calculate-DSDCO" />
         <module name="co-system" />
-        <module name="co-task" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="originTest" target="1.8" />
-      <module name="reducer-dsdco-disciplnary-1" target="1.8" />
-      <module name="Temp-Test" target="1.8" />
+      <module name="calculate-PGA" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -57,7 +55,6 @@
       <module name="model-summary" options="-parameters" />
       <module name="reducer-dsdco-disciplinary-1" options="-parameters" />
       <module name="reducer-dsdco-disciplinary-2" options="-parameters" />
-      <module name="reducer-dsdco-disciplnary-1" options="-parameters" />
       <module name="reducer-dsdco-system" options="-parameters" />
       <module name="test-dsdco-disciplinary-1" options="-parameters" />
       <module name="test-dsdco-disciplinary-2" options="-parameters" />

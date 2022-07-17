@@ -1,0 +1,6 @@
+com\lasat\model\sample\mapper\SamplePointMapper.class
+com\lasat\model\sample\ModelSampleApplication.class
+com\lasat\model\sample\service\SamplePointService.class
+com\lasat\model\sample\service\impl\SamplePointServiceImpl.class
+com\lasat\model\sample\controller\SamplePointController.class
+com\lasat\model\sample\bean\SamplePoint.class

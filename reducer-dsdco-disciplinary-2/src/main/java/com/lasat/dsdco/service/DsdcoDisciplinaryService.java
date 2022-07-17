@@ -1,5 +1,6 @@
 package com.lasat.dsdco.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lasat.dsdco.bean.DsdcoTarget;
 import com.lasat.dsdco.bean.OptimizationResult;
 import com.lasat.dsdco.util.JsonUtil;
@@ -12,10 +13,8 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reducer.bean.ResultInDouble;
-import reducer.handler.DisciplinaryHandler2;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -38,6 +37,9 @@ public class DsdcoDisciplinaryService {
     private Integer currentIteratorCount = null;
 
     private final String CURRENT_DISCIPLINARY_NAME = "reducer-disciplinary-2";
+
+    @Autowired
+    private MatlabService4Disciplinary2 matlabService4Disciplinary2;
 
     /**
      * initialize the consumer of disciplinary
@@ -75,7 +77,7 @@ public class DsdcoDisciplinaryService {
                             System.out.println("Current task id: " + currentTaskId);
                             System.out.println("Current iterator: " + currentIteratorCount);
                         } else {
-                            DsdcoTarget closetPoint = getClosetPointByPGA(target);
+                            DsdcoTarget closetPoint = getClosetPointBySQP(target);
                             sendResultToSystemCalculator(closetPoint);
                             System.out.println("The closet point is: " + closetPoint);
                             currentIteratorCount++;
@@ -125,15 +127,14 @@ public class DsdcoDisciplinaryService {
      * @param dsdcoTarget the given target
      * @return closet point
      */
-    public DsdcoTarget getClosetPointByPGA(DsdcoTarget dsdcoTarget) {
+    public DsdcoTarget getClosetPointBySQP(DsdcoTarget dsdcoTarget) {
         dsdcoTarget.setDisciplinaryName(CURRENT_DISCIPLINARY_NAME);
         Double[] targetVarOrigin = dsdcoTarget.getVariables();
         double[] targetVal = new double[targetVarOrigin.length];
         for (int i = 0; i < targetVal.length; i++) {
             targetVal[i] = targetVarOrigin[i];
         }
-        ResultInDouble closetPoint = DisciplinaryHandler2.getClosetPoint(targetVal);
-        OptimizationResult optimizationResult = new OptimizationResult(closetPoint.score(), closetPoint.variables());
+        OptimizationResult optimizationResult = matlabService4Disciplinary2.getClosetPoint(targetVal);
         return convertOptimizationResult2DsdcoTarget(optimizationResult);
     }
 

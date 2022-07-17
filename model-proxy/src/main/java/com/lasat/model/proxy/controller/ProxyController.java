@@ -26,8 +26,7 @@ public class ProxyController {
     @PostMapping("/tr")
     public Result<Double> getTr(@RequestBody SamplePoint samplePoint) {
         Double tr = proxyService.getTr(samplePoint);
-        if (tr == null) return new Result<>(false, StatusCode.ERROR, "the network should be trained");
-        else return new Result<>(true, StatusCode.OK, "get step response time succeed", tr);
+        return new Result<>(true, StatusCode.OK, "get step response time succeed", tr);
     }
 
     @PostMapping("/trList")
@@ -35,6 +34,19 @@ public class ProxyController {
         List<Double> trList = proxyService.getTrList(samplePointList);
         if (trList == null) return new Result<>(false, StatusCode.ERROR, "the network should be trained");
         else return new Result<>(true, StatusCode.OK, "get step response time succeed", trList);
+    }
+
+    @PostMapping("/cost")
+    public Result<Double> getCost(@RequestBody SamplePoint samplePoint) {
+        Double tr = proxyService.getCost(samplePoint);
+        return new Result<>(true, StatusCode.OK, "get power cost succeed", tr);
+    }
+
+    @PostMapping("/costList")
+    public Result<List<Double>> getCostList(@RequestBody List<SamplePoint> samplePointList) {
+        List<Double> trList = proxyService.getCostList(samplePointList);
+        if (trList == null) return new Result<>(false, StatusCode.ERROR, "the network should be trained");
+        else return new Result<>(true, StatusCode.OK, "get power cost succeed", trList);
     }
 
     @GetMapping

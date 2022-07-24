@@ -1,9 +1,11 @@
-package com.lasat.dsdco.service;
+package com.lasat.dsdco.service.calculate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lasat.dsdco.bean.DsdcoRegion;
 import com.lasat.dsdco.bean.DsdcoTarget;
 import com.lasat.dsdco.bean.OptimizationResult;
+import com.lasat.dsdco.service.calculate.point.GaBestPointService;
+import com.lasat.dsdco.service.calculate.point.SqpBestPointService;
 import com.lasat.dsdco.util.JsonUtil;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -24,7 +26,7 @@ public class RegionCalculateService {
     private final DefaultMQProducer producer = new DefaultMQProducer(mqConfig.getString("producerGroup"));
 
     @Autowired
-    BestPointService bestPointService;
+    SqpBestPointService bestPointService;
 
     /**
      * initialize the producer

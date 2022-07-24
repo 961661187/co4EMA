@@ -9,26 +9,26 @@
         <outputRelativeToContentRoot value="true" />
         <module name="co-power" />
         <module name="model-document" />
+        <module name="calculate-DSDCO" />
         <module name="model-sample" />
         <module name="model-summary" />
         <module name="test-dsdco-disciplinary-2" />
         <module name="model-proxy" />
-        <module name="model-file" />
-        <module name="common" />
         <module name="test-dsdco-system" />
         <module name="co-log" />
         <module name="test-dsdco-disciplinary-1" />
-        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="web-gateway" />
         <module name="common-db" />
-        <module name="reducer-dsdco-disciplinary-2" />
-        <module name="co-task" />
+        <module name="model-file" />
+        <module name="reducer-dsdco-system" />
         <module name="co-performance" />
         <module name="eureka" />
-        <module name="web-gateway" />
-        <module name="reducer-dsdco-system" />
+        <module name="reducer-dsdco-disciplinary-2" />
+        <module name="reducer-dsdco-disciplinary-1" />
         <module name="co-strength" />
-        <module name="calculate-DSDCO" />
+        <module name="common" />
         <module name="co-system" />
+        <module name="co-task" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

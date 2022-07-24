@@ -1,8 +1,9 @@
 package com.lasat.dsdco.bean;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class DsdcoRegion {
+public class DsdcoRegion implements Serializable {
 
     private Double[] upperLim;
     private Double[] lowerLim;

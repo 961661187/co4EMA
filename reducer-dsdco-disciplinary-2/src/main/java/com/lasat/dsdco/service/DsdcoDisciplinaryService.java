@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * calculate service of disciplinary_2 of the optimization reducer from NASA
@@ -37,6 +38,8 @@ public class DsdcoDisciplinaryService {
     private Integer currentIteratorCount = null;
 
     private final String CURRENT_DISCIPLINARY_NAME = "reducer-disciplinary-2";
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     @Autowired
     private MatlabService4Disciplinary2 matlabService4Disciplinary2;
@@ -72,15 +75,23 @@ public class DsdcoDisciplinaryService {
                             resetCalculateVariables();
                         }
 
-                        if (!target.getTaskId().equals(currentTaskId) || !target.getIteratorCount().equals(currentIteratorCount)) {
-                            System.out.println("Duplicate message received: " + targetJson);
-                            System.out.println("Current task id: " + currentTaskId);
-                            System.out.println("Current iterator: " + currentIteratorCount);
-                        } else {
-                            DsdcoTarget closetPoint = getClosetPointBySQP(target);
-                            sendResultToSystemCalculator(closetPoint);
-                            System.out.println("The closet point is: " + closetPoint);
-                            currentIteratorCount++;
+                        // The read and write of iteration count are mutually exclusive
+                        lock.lock();
+                        try {
+                            if (!target.getTaskId().equals(currentTaskId) || !target.getIteratorCount().equals(currentIteratorCount)) {
+                                System.out.println("Duplicate message received: " + targetJson);
+                                System.out.println("Current task id: " + currentTaskId);
+                                System.out.println("Current iterator: " + currentIteratorCount);
+                            } else {
+                                DsdcoTarget closetPoint = getClosetPointBySQP(target);
+                                sendResultToSystemCalculator(closetPoint);
+                                System.out.println("The closet point is: " + closetPoint);
+                                currentIteratorCount++;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.unlock();
                         }
                     }
                 }

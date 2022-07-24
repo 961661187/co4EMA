@@ -1,6 +1,7 @@
 package com.lasat.dsdco.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lasat.dsdco.service.DsdcoSystemService;
 import com.lasat.entity.Result;
 import com.lasat.entity.StatusCode;
@@ -19,7 +20,7 @@ public class ReducerTaskController {
 
     // TODO The fucking debug has not been finished
     @GetMapping("/commit/{taskId}")
-    public Result<String> commitReducerTask(@PathVariable Long taskId) throws InterruptedException {
+    public Result<String> commitReducerTask(@PathVariable Long taskId) throws InterruptedException, JsonProcessingException {
         dsdcoSystemService.closeTask();
         dsdcoSystemService.setTaskId(taskId);
         Thread.sleep(500);

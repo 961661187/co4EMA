@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lasat.dsdco.bean.DsdcoRegion;
 import com.lasat.dsdco.bean.DsdcoTarget;
 import com.lasat.dsdco.bean.OptimizationResult;
+import com.lasat.dsdco.service.calculate.RegionCalculateService;
+import com.lasat.dsdco.util.RedisUtil;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
@@ -15,9 +17,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
@@ -26,19 +28,21 @@ public class DsdcoSystemService {
     private final ResourceBundle mqConfig = ResourceBundle.getBundle("mqConfig");
     private final DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(mqConfig.getString("consumerGroup"));
     // the closest point to the targetPoint of each disciplinary
-    private final ConcurrentHashMap<String, DsdcoTarget> closestPointMap = new ConcurrentHashMap<>(2);
+    private final HashMap<String, DsdcoTarget> closestPointMap = new HashMap<>(2);
     // reentrant lock is used to ensure only one thread can operate the regions
     private final ReentrantLock lock = new ReentrantLock();
     // iterator count and current task id are deemed as idempotent token
     private Integer iteratorCount = 0;
     private Long currentTaskId = null;
     private Double currentScore = .0;
-    // priority queue is aimed at select the best region quickly
     private final PriorityQueue<DsdcoRegion> priorityQueue = new PriorityQueue<>((region1, region2) -> {
         if (region1.getMinTargetFunValue() > region2.getMinTargetFunValue()) return 1;
         else if (region1.getMinTargetFunValue().equals(region2.getMinTargetFunValue())) return 0;
         else return -1;
     });
+    private DsdcoRegion bestRegionInRedis = null;
+    // flush the priority queue to redis when the size of queue is bigger equal than thres hold
+    private final Integer flushThreshold = 100;
     // current system target point
     private DsdcoTarget currentTarget;
     // current region
@@ -53,8 +57,14 @@ public class DsdcoSystemService {
     private final Double[] originLowerLim = new Double[]{2.6, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
     private final Double[] originUpperLim = new Double[]{3.6, 0.8, 28.0, 8.3, 8.3, 3.9, 5.5};
 
+    //This list is aimed at record the score of every iteration
+    private final List<Double> scoreRecord = new ArrayList<>();
+
     @Autowired
     private RegionCalculateService regionCalculateService;
+
+    @Resource
+    private RedisUtil redisUtil;
 
     /**
      * initialize the consumer
@@ -83,9 +93,16 @@ public class DsdcoSystemService {
                         && dsdcoTarget.getTaskId().equals(currentTaskId)
                         && dsdcoTarget.getIteratorCount().equals(iteratorCount)
                         && !closestPointMap.containsKey(dsdcoTarget.getDisciplinaryName())) {
-                    closestPointMap.put(dsdcoTarget.getDisciplinaryName(), dsdcoTarget);
-                    System.out.println("Point map has been updated: " + closestPointMap);
-                    checkDisciplinaryResult();
+                    lock.lock();
+                    try {
+                        closestPointMap.put(dsdcoTarget.getDisciplinaryName(), dsdcoTarget);
+                        //System.out.println("Point map has been updated: " + closestPointMap);
+                        checkDisciplinaryResult();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        lock.unlock();
+                    }
                 } else {
                     System.out.println("Duplicate message received: " + dsdcoTarget);
                 }
@@ -120,7 +137,7 @@ public class DsdcoSystemService {
         originRegion.setBestVariables(variablesOfRegion);
 
         // add the origin region to priority queue
-        priorityQueue.add(originRegion);
+        offerRegionAndCheck(originRegion);
         currentRegion = originRegion;
 
         // send the region to message queue
@@ -146,45 +163,37 @@ public class DsdcoSystemService {
      * else, split and select best region to calculate
      */
     private void checkDisciplinaryResult() {
-        try {
-            // only one thread can operate the region
-            lock.lock();
-            if (closestPointMap.size() < DISCIPLINARY_COUNT) return;
-            int constraintMeetCount = 0;
-            double maxDistance = 0;
-            for (Map.Entry<String, DsdcoTarget> disPointEntry : closestPointMap.entrySet()) {
-                DsdcoTarget disPoint = disPointEntry.getValue();
-                if (!disPoint.equals(currentTarget)) {
-                    maxDistance = Math.max(maxDistance, getDistance(disPoint, currentTarget));
-                } else {
-                    constraintMeetCount++;
-                }
-            }
-
-            if (constraintMeetCount == DISCIPLINARY_COUNT) {
-                System.out.println("the result is " + currentTarget.toString() + ", score: " + currentScore);
-                closeTask();
-            } else if (currentTarget.getIteratorCount() >= 500) {
-                System.out.println("[ERROR]: The task has been calculated 500 times, but don't get a result");
+        if (closestPointMap.size() < DISCIPLINARY_COUNT) return;
+        int constraintMeetCount = 0;
+        double maxDistance = 0;
+        for (Map.Entry<String, DsdcoTarget> disPointEntry : closestPointMap.entrySet()) {
+            DsdcoTarget disPoint = disPointEntry.getValue();
+            if (!disPoint.equals(currentTarget)) {
+                maxDistance = Math.max(maxDistance, getDistance(disPoint, currentTarget));
             } else {
-                currentRegion = splitAndSelectRegion(maxDistance);
-                if (currentRegion == null) {
-                    System.out.println("[ERROR]: No suitable result!!");
-                    return;
-                }
-                // prepare for the next calculation
-                iteratorCount++;
-                currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
-                currentScore = - currentRegion.getMinTargetFunValue();
-                closestPointMap.clear();
-                regionCalculateService.sendTarget2Disciplinary(currentTarget);
-                printMessage();
+                constraintMeetCount++;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // ensure the lock will be free even exceptions occurred
-            lock.unlock();
+        }
+
+        if (constraintMeetCount == DISCIPLINARY_COUNT) {
+            System.out.println("the result is " + currentTarget.toString() + ", score: " + currentScore);
+            System.out.println(scoreRecord);
+            closeTask();
+        } else if (currentTarget.getIteratorCount() >= 500000) {
+            System.out.println("[ERROR]: The task has been calculated 500000 times, but don't get a result");
+        } else {
+            currentRegion = splitAndSelectRegion(maxDistance);
+            if (currentRegion == null) {
+                System.out.println("[ERROR]: No suitable result!!");
+                return;
+            }
+            // prepare for the next calculation
+            iteratorCount++;
+            currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
+            currentScore = -currentRegion.getMinTargetFunValue();
+            closestPointMap.clear();
+            regionCalculateService.sendTarget2Disciplinary(currentTarget);
+            printMessage();
         }
     }
 
@@ -196,7 +205,7 @@ public class DsdcoSystemService {
     private DsdcoRegion splitAndSelectRegion(double maxDistance) {
         double excludeDistance = maxDistance * Math.sqrt(VARIABLES_COUNT) / VARIABLES_COUNT;
         Double[] currentVariables = currentTarget.getVariables();
-        currentRegion = priorityQueue.poll();
+        currentRegion = pollRegionAndCheck();
         Double[] currentUpperLim = currentRegion != null ? currentRegion.getUpperLim() : new Double[0];
         Double[] currentLowerLim = currentRegion != null ? currentRegion.getLowerLim() : new Double[0];
         for (int i = 0; i < VARIABLES_COUNT; i++) {
@@ -244,11 +253,7 @@ public class DsdcoSystemService {
             }
             region.setBestVariables(bestVariables);
             region.setMinTargetFunValue(resultInUpperRegion.getScore());
-            System.out.println("New Region add to the priority queue: ");
-            System.out.println(Arrays.toString(region.getUpperLim()));
-            System.out.println(Arrays.toString(region.getLowerLim()));
-            priorityQueue.add(region);
-            System.out.println("Region priority queue size: " + priorityQueue.size());
+            offerRegionAndCheck(region);
         }
     }
 
@@ -298,8 +303,8 @@ public class DsdcoSystemService {
     public void closeTask() {
         closestPointMap.clear();
         iteratorCount = 0;
-        currentTaskId = null;
         priorityQueue.clear();
+        currentTaskId = null;
         currentTarget = null;
         currentScore = .0;
         currentRegion = null;
@@ -317,10 +322,28 @@ public class DsdcoSystemService {
     }
 
     private void printMessage() {
-        System.out.println("The target of this iterator is: \n" + currentTarget);
-        System.out.println("Current region: ");
-        System.out.println(Arrays.toString(currentRegion.getUpperLim()));
-        System.out.println(Arrays.toString(currentRegion.getLowerLim()));
-        System.out.println("The size of region queue is: " + priorityQueue.size());
+        //System.out.println("The target of this iterator is: " + currentTarget);
+        System.out.println("Current Score: " + currentScore);
+        scoreRecord.add(currentScore);
+    }
+
+    private void offerRegionAndCheck(DsdcoRegion region) {
+        priorityQueue.offer(region);
+        if (priorityQueue.size() >= flushThreshold) {
+            redisUtil.flush(priorityQueue, flushThreshold - 10);
+            System.out.println("queue flush succeed");
+        }
+    }
+
+    private DsdcoRegion pollRegionAndCheck() {
+        if (priorityQueue.size() == 1) {
+            bestRegionInRedis = redisUtil.pullFromRedis(priorityQueue, flushThreshold / 2);
+            System.out.println("queue update succeed");
+        }
+        if (bestRegionInRedis != null && bestRegionInRedis.getMinTargetFunValue() >= currentRegion.getMinTargetFunValue()) {
+            bestRegionInRedis = redisUtil.pullFromRedis(priorityQueue, 1);
+        }
+
+        return priorityQueue.poll();
     }
 }

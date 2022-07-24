@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * calculate service of disciplinary_1 of the optimization reducer from NASA
@@ -38,11 +39,14 @@ public class DsdcoDisciplinaryService {
 
     private final String CURRENT_DISCIPLINARY_NAME = "reducer-disciplinary-1";
 
+    private final ReentrantLock lock = new ReentrantLock();
+
     @Autowired
     private MatlabService4Disciplinary1 matlabService4Disciplinary1;
 
     /**
      * initialize the consumer of disciplinary
+     *
      * @throws MQClientException the exception for mq service
      */
     @PostConstruct
@@ -70,16 +74,23 @@ public class DsdcoDisciplinaryService {
                             System.out.println("Current task has been finished, variables will be reset");
                             resetCalculateVariables();
                         }
-
-                        if (!target.getTaskId().equals(currentTaskId) || !target.getIteratorCount().equals(currentIteratorCount)) {
-                            System.out.println("Duplicate message received: " + targetJson);
-                            System.out.println("Current task id: " + currentTaskId);
-                            System.out.println("Current iterator: " + currentIteratorCount);
-                        } else {
-                            DsdcoTarget closetPoint = getClosetPointBySQP(target);
-                            sendResultToSystemCalculator(closetPoint);
-                            currentIteratorCount++;
-                            System.out.println("The closet point is: " + closetPoint);
+                        // The read and write of iteration count are mutually exclusive
+                        lock.lock();
+                        try {
+                            if (!target.getTaskId().equals(currentTaskId) || !target.getIteratorCount().equals(currentIteratorCount)) {
+                                System.out.println("Duplicate message received: " + targetJson);
+                                System.out.println("Current task id: " + currentTaskId);
+                                System.out.println("Current iterator: " + currentIteratorCount);
+                            } else {
+                                DsdcoTarget closetPoint = getClosetPointBySQP(target);
+                                sendResultToSystemCalculator(closetPoint);
+                                currentIteratorCount++;
+                                System.out.println("The closet point is: " + closetPoint);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            lock.unlock();
                         }
                     }
                 }
@@ -98,6 +109,7 @@ public class DsdcoDisciplinaryService {
 
     /**
      * get the dsdco target from mq message
+     *
      * @param json the message in json type from message queue
      * @return dsdco target
      */
@@ -121,6 +133,7 @@ public class DsdcoDisciplinaryService {
 
     /**
      * get the closet point from given point by parallel genetic algorithm
+     *
      * @param dsdcoTarget the given target
      * @return closet point
      */
@@ -137,6 +150,7 @@ public class DsdcoDisciplinaryService {
 
     /**
      * send the calculate result to system calculator
+     *
      * @param dsdcoTarget the closet point got by PGA
      */
     public void sendResultToSystemCalculator(DsdcoTarget dsdcoTarget) {
@@ -163,6 +177,7 @@ public class DsdcoDisciplinaryService {
 
     /**
      * convert the optimization result to dsdco target
+     *
      * @return the dsdco target converted from optimization result
      */
     private DsdcoTarget convertOptimizationResult2DsdcoTarget(OptimizationResult result) {

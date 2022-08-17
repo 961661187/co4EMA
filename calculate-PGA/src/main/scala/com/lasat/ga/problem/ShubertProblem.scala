@@ -17,15 +17,12 @@ case object ShubertProblem extends Problem[Double] {
   /**
    * if an individual meet the constraint
    *
-   * @param variableList variable list of an individual
+   * @param variableList variable list of an individual, the variables has not been normalized
    * @return whether this individual is suitable
    */
   override def isSuitable(variableList: Array[Double]): Boolean = {
     val normalizedVar = normalization(variableList)
-    for (elem <- normalizedVar) {
-      if (elem > 10 || elem < -10) return false
-    }
-    true
+    checkConstraint(normalizedVar)
   }
 
   /**
@@ -75,4 +72,17 @@ override def getScoreWithNormalizedArray(normalizedList: Array[Double]): Double 
    * @return
    */
   override def getProblemName: String = "Shubert"
+
+  /**
+   * check whether given variables meet constraint
+   *
+   * @param variable normalized variables
+   * @return is variable meet constrains
+   */
+  override def checkConstraint(variable: Array[Double]): Boolean = {
+    for (elem <- variable) {
+      if (elem > 10 || elem < -10) return false
+    }
+    true
+  }
 }

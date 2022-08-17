@@ -1,0 +1,8 @@
+com\lasat\model\proxy\mapper\ProxyMapper.class
+com\lasat\model\proxy\ModelProxyApplication.class
+com\lasat\model\proxy\feign\SamplePointFeign.class
+com\lasat\model\proxy\bean\SamplePoint.class
+com\lasat\model\proxy\service\impl\ProxyServiceImpl.class
+com\lasat\model\proxy\controller\ProxyController.class
+com\lasat\model\proxy\bean\Proxy.class
+com\lasat\model\proxy\service\ProxyService.class

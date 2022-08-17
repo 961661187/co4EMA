@@ -7,7 +7,7 @@
     <description>parent project</description>
     <modules>
         <module>common</module>
-        <module>calculate-PGA</module>
+        <!--<module>calculate-PGA</module>-->
         <module>calculate-DSDCO</module>
         <module>model-sample</module>
         <module>model-file</module>
@@ -22,6 +22,13 @@
         <module>eureka</module>
         <module>model-proxy</module>
         <module>common-db</module>
+        <module>reducer-dsdco-system</module>
+        <module>reducer-dsdco-disciplinary-2</module>
+        <module>reducer-dsdco-disciplinary-1</module>
+        <module>test-dsdco-system</module>
+        <module>test-dsdco-disciplinary-2</module>
+        <module>test-dsdco-disciplinary-1</module>
+        <module>co-task</module>
     </modules>
 
     <parent>
@@ -72,16 +79,21 @@
             <version>2.1.1.RELEASE</version>
         </dependency>
 
-        <!--fastJson-->
+        <!--Jackson-->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.51</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.0</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.9.0</version>
         </dependency>
 
     </dependencies>

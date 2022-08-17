@@ -18,13 +18,13 @@ import scala.util.Random
  */
 class PGAHandler[T: ClassTag](val encoder: Encoder[T], val problem: Problem[T]) {
   //generation iterator
-  var genIterNum: Int = 30
+  var genIterNum: Int = 10
   //island number
-  var islandNum: Int = 3
+  var islandNum: Int = 4
   //population size of each island
   var islandPopSize: Int = 50 * problem.getVar.length
   //generation iterator number of each island
-  var islandGenIterNum: Int = 500
+  var islandGenIterNum: Int = 200
   //spark context
   var sparkContext: SparkContext = _
   //the length of gene
@@ -50,7 +50,7 @@ class PGAHandler[T: ClassTag](val encoder: Encoder[T], val problem: Problem[T]) 
     bestResult = getResultFromIsland(islandPop)
 
     //calculate loop
-    for (_ <- 1 until genIterNum) {
+    for (i <- 1 until genIterNum) {
       //individual migrate between each island
       migrate(islandPop)
 
@@ -65,6 +65,7 @@ class PGAHandler[T: ClassTag](val encoder: Encoder[T], val problem: Problem[T]) 
       if (tempResult.score > bestResult.score)
         bestResult = tempResult
       //println(bestResult.score)
+      println("********************************** PGA generation iterator : " + i + "********************************************************")
     }
 
     //environment free

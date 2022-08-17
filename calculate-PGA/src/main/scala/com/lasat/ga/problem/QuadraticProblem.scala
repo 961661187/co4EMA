@@ -25,8 +25,7 @@ object QuadraticProblem extends Problem[Double] {
    */
   override def isSuitable(variableList: Array[Double]): Boolean = {
     val normalizedArray = normalization(variableList)
-    val variable = normalizedArray(0)
-    variable <= 5 && variable >= -5
+    checkConstraint(normalizedArray)
   }
 
   /**
@@ -78,4 +77,14 @@ object QuadraticProblem extends Problem[Double] {
    * @return
    */
   override def getProblemName: String = "quadratic problem"
+
+  /**
+   * check whether given variables meet constraint
+   *
+   * @param variable variables
+   * @return is variable meet constrains
+   */
+  override def checkConstraint(variable: Array[Double]): Boolean = {
+    variable(0) >= -5 && variable(0) <= 5
+  }
 }

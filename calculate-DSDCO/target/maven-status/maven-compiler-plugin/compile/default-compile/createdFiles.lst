@@ -1,0 +1,7 @@
+com\lasat\dsdco\bean\DsdcoTarget.class
+com\lasat\dsdco\util\JsonUtil.class
+com\lasat\mq\test\ProducerTest.class
+com\lasat\dsdco\bean\OptimizationResult.class
+com\lasat\dsdco\bean\DsdcoRegion.class
+com\lasat\mq\test\ConsumerTest.class
+com\lasat\mq\test\ConsumerTest$1.class

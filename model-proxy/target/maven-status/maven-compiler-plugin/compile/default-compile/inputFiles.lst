@@ -1,0 +1,8 @@
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\service\impl\ProxyServiceImpl.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\bean\SamplePoint.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\controller\ProxyController.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\bean\Proxy.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\mapper\ProxyMapper.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\feign\SamplePointFeign.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\ModelProxyApplication.java
+E:\co4EMA\model-proxy\src\main\java\com\lasat\model\proxy\service\ProxyService.java

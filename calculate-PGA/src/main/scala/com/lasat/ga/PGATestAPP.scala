@@ -15,4 +15,5 @@ object PGATestAPP extends App {
   //get the calculate result adn print it
   val result: GAResult[Double] = pgaHandler.getResult
   println(result.score)
+  println(result.variables.mkString(","))
 }

@@ -32,16 +32,20 @@ public class ProxyServiceImpl implements ProxyService {
     @Autowired
     private ProxyMapper proxyMapper;
 
+    // The network for step response time
     private BasicNetwork network = null;
     private final String NETWORK_NAME = "network_proxy";
+    // the network for power cost
+    private BasicNetwork network4Cost = null;
+    private final String NETWORK_NAME_COST = "network_proxy_cost";
 
     @Override
-    public Double getTr(SamplePoint samplePoint) {
+    public double getTr(SamplePoint samplePoint) {
         if (network == null) {
             network = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File(NETWORK_NAME));
         }
         if (network == null) {
-            return null;
+            return -1;
         } else {
             double[] data = getData(samplePoint);
             MLData input = new BasicMLData(data);
@@ -65,30 +69,68 @@ public class ProxyServiceImpl implements ProxyService {
         }
     }
 
+    @Override
+    public double getCost(SamplePoint samplePoint) {
+        if (network4Cost == null) {
+            network4Cost = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File(NETWORK_NAME_COST));
+        }
+        if (network4Cost == null) {
+            return -1;
+        } else {
+            double[] data = getData(samplePoint);
+            MLData input = new BasicMLData(data);
+            return inverseNormalizeCost(network4Cost.compute(input).getData(0));
+        }
+    }
+
+    @Override
+    public List<Double> getCostList(List<SamplePoint> samplePointList) {
+        if (network4Cost == null) {
+            network4Cost = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File(NETWORK_NAME_COST));
+        }
+        if (network4Cost == null) {
+            return null;
+        } else {
+            List<Double> result = new ArrayList<>();
+            for (SamplePoint samplePoint : samplePointList) {
+                result.add(getCost(samplePoint));
+            }
+            return result;
+        }
+    }
+
     @Async
     @Override
     public void train() {
-        //create a network
-        network = new BasicNetwork();
-        network.addLayer(new BasicLayer(null, true, 6));
-        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 100));
-        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 1));
-        network.getStructure().finalizeStructure();
-        network.reset();
-
         //get the normalized training data
         List<SamplePoint> points = samplePointFeign.getAll().getData();
         int length = points.size();
 
         double[][] input = new double[length][6];
-        double[][] output = new double[length][1];
+        double[][] output4Tr = new double[length][1];
+        double[][] output4Cost = new double[length][1];
 
         for (int i = 0; i < points.size(); i++) {
             SamplePoint samplePoint = points.get(i);
             double[] parameters = getData(samplePoint);
             input[i] = parameters;
-            output[i] = new double[]{normalize(samplePoint.getTr())};
+            output4Tr[i] = new double[]{normalize(samplePoint.getTr())};
+            output4Cost[i] = new double[]{normalizeCost(samplePoint.getCost())};
         }
+
+        network = new BasicNetwork();
+        train(NETWORK_NAME, network, input, output4Tr, length);
+        network4Cost = new BasicNetwork();
+        train(NETWORK_NAME_COST, network4Cost, input, output4Cost, length);
+    }
+
+    private void train(String networkName, BasicNetwork network, double[][] input, double[][] output, int length) {
+        //create a network
+        network.addLayer(new BasicLayer(null, true, 6));
+        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 100));
+        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 1));
+        network.getStructure().finalizeStructure();
+        network.reset();
 
         //train the neural network
         MLDataSet trainingSet = new BasicMLDataSet(input, output);
@@ -98,6 +140,7 @@ public class ProxyServiceImpl implements ProxyService {
         do {
             train.iteration();
             epoch++;
+            System.out.println(networkName + " The error of current neural network is " + train.getError());
         } while (train.getError() > 0.0001 && epoch <= 10000);
 
         //save proxy information to database
@@ -108,7 +151,7 @@ public class ProxyServiceImpl implements ProxyService {
         proxyMapper.insert(proxy);
 
         //neural network persistence
-        EncogDirectoryPersistence.saveObject(new File(NETWORK_NAME), network);
+        EncogDirectoryPersistence.saveObject(new File(networkName), network);
     }
 
     @Override
@@ -146,10 +189,18 @@ public class ProxyServiceImpl implements ProxyService {
     }
 
     private double normalize(double data) {
-        return (data - 0.4) / 1.3;
+        return (data - 0.2) / 2;
     }
 
     private double inverseNormalize(double data) {
-        return data * 1.3 + 0.4;
+        return data * 2 + 0.2;
+    }
+
+    private double normalizeCost(double data) {
+        return (data - 200) / 800;
+    }
+
+    private double inverseNormalizeCost(double data) {
+        return data * 800 + 200;
     }
 }

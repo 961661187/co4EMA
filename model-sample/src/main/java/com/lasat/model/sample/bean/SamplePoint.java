@@ -9,8 +9,9 @@ public class SamplePoint {
     private double r;
     private int kp;
     private double tr;
+    private double cost;
 
-    public SamplePoint(int id, double ds, double alpha, double flux, double l, double r, int kp, double tr) {
+    public SamplePoint(int id, double ds, double alpha, double flux, double l, double r, int kp, double tr, double powerCost) {
         this.id = id;
         this.ds = ds;
         this.alpha = alpha;
@@ -19,6 +20,7 @@ public class SamplePoint {
         this.r = r;
         this.kp = kp;
         this.tr = tr;
+        this.cost = powerCost;
     }
 
     public int getId() {
@@ -85,6 +87,14 @@ public class SamplePoint {
         this.tr = tr;
     }
 
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double powerCost) {
+        this.cost = powerCost;
+    }
+
     @Override
     public String toString() {
         return "SamplePoint{" +
@@ -96,6 +106,7 @@ public class SamplePoint {
                 ", r=" + r +
                 ", kp=" + kp +
                 ", tr=" + tr +
+                ", powerCost=" + cost +
                 '}';
     }
 }

@@ -13,8 +13,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
-        <option value="$PROJECT_DIR$/Temp-Test/pom.xml" />
-        <option value="$PROJECT_DIR$/originTest/pom.xml" />
+        <option value="$PROJECT_DIR$/calculate-PGA/pom.xml" />
       </set>
     </option>
   </component>

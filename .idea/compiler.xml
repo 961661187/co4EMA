@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <option name="BUILD_PROCESS_HEAP_SIZE" value="2048" />
     <annotationProcessing>
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="model-file" />
-        <module name="co-performance" />
-        <module name="calculate-DSDCO" />
         <module name="co-power" />
-        <module name="model-summary" />
         <module name="model-document" />
+        <module name="calculate-DSDCO" />
         <module name="model-sample" />
-        <module name="co-log" />
-        <module name="co-system" />
-        <module name="common-db" />
-        <module name="calculate-PGA" />
-        <module name="eureka" />
-        <module name="web-gateway" />
-        <module name="co-strength" />
+        <module name="model-summary" />
+        <module name="test-dsdco-disciplinary-2" />
         <module name="model-proxy" />
+        <module name="test-dsdco-system" />
+        <module name="co-log" />
+        <module name="test-dsdco-disciplinary-1" />
+        <module name="web-gateway" />
+        <module name="common-db" />
+        <module name="model-file" />
+        <module name="reducer-dsdco-system" />
+        <module name="co-performance" />
+        <module name="eureka" />
+        <module name="reducer-dsdco-disciplinary-2" />
+        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="co-strength" />
         <module name="common" />
+        <module name="co-system" />
+        <module name="co-task" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="originTest" target="1.8" />
-      <module name="Temp-Test" target="1.8" />
+      <module name="calculate-PGA" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -38,6 +44,7 @@
       <module name="co-power" options="-parameters" />
       <module name="co-strength" options="-parameters" />
       <module name="co-system" options="-parameters" />
+      <module name="co-task" options="-parameters" />
       <module name="common" options="-parameters" />
       <module name="common-db" options="-parameters" />
       <module name="eureka" options="-parameters" />
@@ -46,6 +53,12 @@
       <module name="model-proxy" options="-parameters" />
       <module name="model-sample" options="-parameters" />
       <module name="model-summary" options="-parameters" />
+      <module name="reducer-dsdco-disciplinary-1" options="-parameters" />
+      <module name="reducer-dsdco-disciplinary-2" options="-parameters" />
+      <module name="reducer-dsdco-system" options="-parameters" />
+      <module name="test-dsdco-disciplinary-1" options="-parameters" />
+      <module name="test-dsdco-disciplinary-2" options="-parameters" />
+      <module name="test-dsdco-system" options="-parameters" />
       <module name="web-gateway" options="-parameters" />
     </option>
   </component>

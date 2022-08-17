@@ -11,7 +11,18 @@ public interface ProxyService {
      * @param samplePoint sample point data
      * @return the step response time
      */
-    Double getTr(SamplePoint samplePoint);
+    double getTr(SamplePoint samplePoint);
+
+    List<Double> getTrList(List<SamplePoint> samplePointList);
+
+    /**
+     * get the power cost based on EMA parameters
+     * @param samplePoint sample point data
+     * @return the step response time
+     */
+    double getCost(SamplePoint samplePoint);
+
+    List<Double> getCostList(List<SamplePoint> samplePointList);
 
     /**
      * retrain the neural network
@@ -22,5 +33,4 @@ public interface ProxyService {
 
     List<Proxy> findByModelId(Integer modelId);
 
-    List<Double> getTrList(List<SamplePoint> samplePointList);
 }

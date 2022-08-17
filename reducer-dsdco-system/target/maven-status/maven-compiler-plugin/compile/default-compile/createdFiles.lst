@@ -1,9 +1,9 @@
 com\lasat\dsdco\service\calculate\RegionCalculateService.class
 com\lasat\dsdco\service\calculate\point\ReducerSystemProblem.class
+com\lasat\dsdco\service\DsdcoSystemService$1.class
 com\lasat\dsdco\service\calculate\point\GaBestPointService.class
 com\lasat\dsdco\service\DsdcoSystemService.class
-com\lasat\dsdco\util\RedisUtil.class
-com\lasat\dsdco\config\RedisConfig.class
+com\lasat\dsdco\config\RedissonConfig.class
 com\lasat\dsdco\controller\ReducerTaskController.class
 com\lasat\dsdco\util\PointUtil.class
 com\lasat\dsdco\service\calculate\point\SqpBestPointService.class

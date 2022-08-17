@@ -5,7 +5,7 @@ import com.lasat.dsdco.bean.DsdcoRegion;
 import com.lasat.dsdco.bean.DsdcoTarget;
 import com.lasat.dsdco.bean.OptimizationResult;
 import com.lasat.dsdco.service.calculate.RegionCalculateService;
-import com.lasat.dsdco.util.RedisUtil;
+import com.lasat.dsdco.service.calculate.redission.RedisPriorityQueueUtil;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -35,14 +34,8 @@ public class DsdcoSystemService {
     private Integer iteratorCount = 0;
     private Long currentTaskId = null;
     private Double currentScore = .0;
-    private final PriorityQueue<DsdcoRegion> priorityQueue = new PriorityQueue<>((region1, region2) -> {
-        if (region1.getMinTargetFunValue() > region2.getMinTargetFunValue()) return 1;
-        else if (region1.getMinTargetFunValue().equals(region2.getMinTargetFunValue())) return 0;
-        else return -1;
-    });
-    private DsdcoRegion bestRegionInRedis = null;
-    // flush the priority queue to redis when the size of queue is bigger equal than thres hold
-    private final Integer flushThreshold = 100;
+    // Priority queue based on redis
+    private RedisPriorityQueueUtil<DsdcoRegion> priorityQueue;
     // current system target point
     private DsdcoTarget currentTarget;
     // current region
@@ -52,19 +45,38 @@ public class DsdcoSystemService {
     // the number of variables
     private final int VARIABLES_COUNT = 7;
     private final int DISCIPLINARY_COUNT = 2;
+    // the convergence speed depends on the value of this variable
+    private double regionThreshold = 0.01;
 
     //origin upper and lower limit of the region
-    private final Double[] originLowerLim = new Double[]{2.6, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
+    private final Double[] originLowerLim = new Double[]{3.5, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
     private final Double[] originUpperLim = new Double[]{3.6, 0.8, 28.0, 8.3, 8.3, 3.9, 5.5};
-
-    //This list is aimed at record the score of every iteration
-    private final List<Double> scoreRecord = new ArrayList<>();
 
     @Autowired
     private RegionCalculateService regionCalculateService;
 
-    @Resource
-    private RedisUtil redisUtil;
+    /**
+     * initialize the priority queue
+     */
+    @PostConstruct
+    public void initializeRedisPriorityQueue() {
+        Comparator<DsdcoRegion> regionComparator = new Comparator<DsdcoRegion>() {
+            @Override
+            public int compare(DsdcoRegion region1, DsdcoRegion region2) {
+                Double minTargetFunValue1 = region1 == null ? 0 : region1.getMinTargetFunValue();
+                Double minTargetFunValue2 = region2 == null ? 0 : region2.getMinTargetFunValue();
+                if (minTargetFunValue1 > minTargetFunValue2) return 1;
+                else if (minTargetFunValue1.equals(minTargetFunValue2)) return 0;
+                else return -1;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }
+        };
+        this.priorityQueue = new RedisPriorityQueueUtil<>(VARIABLES_COUNT, currentTaskId, regionComparator, 1000);
+    }
 
     /**
      * initialize the consumer
@@ -137,7 +149,7 @@ public class DsdcoSystemService {
         originRegion.setBestVariables(variablesOfRegion);
 
         // add the origin region to priority queue
-        offerRegionAndCheck(originRegion);
+        priorityQueue.offer(originRegion);
         currentRegion = originRegion;
 
         // send the region to message queue
@@ -177,7 +189,6 @@ public class DsdcoSystemService {
 
         if (constraintMeetCount == DISCIPLINARY_COUNT) {
             System.out.println("the result is " + currentTarget.toString() + ", score: " + currentScore);
-            System.out.println(scoreRecord);
             closeTask();
         } else if (currentTarget.getIteratorCount() >= 500000) {
             System.out.println("[ERROR]: The task has been calculated 500000 times, but don't get a result");
@@ -203,9 +214,9 @@ public class DsdcoSystemService {
      * @return the best region
      */
     private DsdcoRegion splitAndSelectRegion(double maxDistance) {
-        double excludeDistance = maxDistance * Math.sqrt(VARIABLES_COUNT) / VARIABLES_COUNT;
+        double excludeDistance = Math.max(maxDistance * Math.sqrt(VARIABLES_COUNT) / VARIABLES_COUNT, regionThreshold);
         Double[] currentVariables = currentTarget.getVariables();
-        currentRegion = pollRegionAndCheck();
+        currentRegion = priorityQueue.poll();
         Double[] currentUpperLim = currentRegion != null ? currentRegion.getUpperLim() : new Double[0];
         Double[] currentLowerLim = currentRegion != null ? currentRegion.getLowerLim() : new Double[0];
         for (int i = 0; i < VARIABLES_COUNT; i++) {
@@ -253,7 +264,7 @@ public class DsdcoSystemService {
             }
             region.setBestVariables(bestVariables);
             region.setMinTargetFunValue(resultInUpperRegion.getScore());
-            offerRegionAndCheck(region);
+            priorityQueue.offer(region);
         }
     }
 
@@ -323,27 +334,6 @@ public class DsdcoSystemService {
 
     private void printMessage() {
         //System.out.println("The target of this iterator is: " + currentTarget);
-        System.out.println("Current Score: " + currentScore);
-        scoreRecord.add(currentScore);
-    }
-
-    private void offerRegionAndCheck(DsdcoRegion region) {
-        priorityQueue.offer(region);
-        if (priorityQueue.size() >= flushThreshold) {
-            redisUtil.flush(priorityQueue, flushThreshold - 10);
-            System.out.println("queue flush succeed");
-        }
-    }
-
-    private DsdcoRegion pollRegionAndCheck() {
-        if (priorityQueue.size() == 1) {
-            bestRegionInRedis = redisUtil.pullFromRedis(priorityQueue, flushThreshold / 2);
-            System.out.println("queue update succeed");
-        }
-        if (bestRegionInRedis != null && bestRegionInRedis.getMinTargetFunValue() >= currentRegion.getMinTargetFunValue()) {
-            bestRegionInRedis = redisUtil.pullFromRedis(priorityQueue, 1);
-        }
-
-        return priorityQueue.poll();
+        System.out.println("Current Score: " + currentScore + "   Current iteration: " + iteratorCount);
     }
 }

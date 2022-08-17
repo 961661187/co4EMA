@@ -47,7 +47,7 @@ public class GaBestPointService {
         algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
                 .setMaxEvaluations(10000)
-                .setPopulationSize(500)
+                .setPopulationSize(1000)
                 .build();
 
         // algorithm execute

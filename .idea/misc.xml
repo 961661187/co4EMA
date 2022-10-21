@@ -14,6 +14,11 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/calculate-PGA/pom.xml" />
+        <option value="$PROJECT_DIR$/co-log/pom.xml" />
+        <option value="$PROJECT_DIR$/co-performance/pom.xml" />
+        <option value="$PROJECT_DIR$/co-power/pom.xml" />
+        <option value="$PROJECT_DIR$/co-strength/pom.xml" />
+        <option value="$PROJECT_DIR$/co-task/pom.xml" />
       </set>
     </option>
   </component>

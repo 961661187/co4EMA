@@ -13,11 +13,6 @@
         <module>model-file</module>
         <module>model-document</module>
         <module>model-summary</module>
-        <module>co-system</module>
-        <module>co-performance</module>
-        <module>co-strength</module>
-        <module>co-power</module>
-        <module>co-log</module>
         <module>web-gateway</module>
         <module>eureka</module>
         <module>model-proxy</module>
@@ -28,7 +23,8 @@
         <module>test-dsdco-system</module>
         <module>test-dsdco-disciplinary-2</module>
         <module>test-dsdco-disciplinary-1</module>
-        <module>co-task</module>
+        <module>ema-ga</module>
+        <module>emd-dsdco-system</module>
     </modules>
 
     <parent>

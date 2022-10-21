@@ -7,32 +7,33 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="co-power" />
         <module name="model-document" />
-        <module name="calculate-DSDCO" />
         <module name="model-sample" />
         <module name="model-summary" />
         <module name="test-dsdco-disciplinary-2" />
         <module name="model-proxy" />
+        <module name="common" />
         <module name="test-dsdco-system" />
-        <module name="co-log" />
         <module name="test-dsdco-disciplinary-1" />
-        <module name="web-gateway" />
+        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="ema-ga" />
         <module name="common-db" />
         <module name="model-file" />
-        <module name="reducer-dsdco-system" />
-        <module name="co-performance" />
-        <module name="eureka" />
         <module name="reducer-dsdco-disciplinary-2" />
-        <module name="reducer-dsdco-disciplinary-1" />
-        <module name="co-strength" />
-        <module name="common" />
-        <module name="co-system" />
-        <module name="co-task" />
+        <module name="eureka" />
+        <module name="emd-dsdco-system" />
+        <module name="web-gateway" />
+        <module name="reducer-dsdco-system" />
+        <module name="calculate-DSDCO" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="calculate-PGA" target="1.8" />
+      <module name="co-log" target="1.8" />
+      <module name="co-performance" target="1.8" />
+      <module name="co-power" target="1.8" />
+      <module name="co-strength" target="1.8" />
+      <module name="co-task" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -43,10 +44,11 @@
       <module name="co-performance" options="-parameters" />
       <module name="co-power" options="-parameters" />
       <module name="co-strength" options="-parameters" />
-      <module name="co-system" options="-parameters" />
       <module name="co-task" options="-parameters" />
       <module name="common" options="-parameters" />
       <module name="common-db" options="-parameters" />
+      <module name="ema-ga" options="-parameters" />
+      <module name="emd-dsdco-system" options="-parameters" />
       <module name="eureka" options="-parameters" />
       <module name="model-document" options="-parameters" />
       <module name="model-file" options="-parameters" />

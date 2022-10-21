@@ -88,7 +88,7 @@ public class DsdcoSystemService {
                     lock.lock();
                     try {
                         closestPointMap.put(dsdcoTarget.getDisciplinaryName(), dsdcoTarget);
-                        System.out.println("Point map has been updated: " + closestPointMap);
+                        //System.out.println("Point map has been updated: " + closestPointMap);
                         checkDisciplinaryResult();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -96,7 +96,7 @@ public class DsdcoSystemService {
                         lock.unlock();
                     }
                 } else {
-                    System.out.println("Duplicate message received: " + dsdcoTarget);
+                    //System.out.println("Duplicate message received: " + dsdcoTarget);
                 }
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
@@ -171,11 +171,11 @@ public class DsdcoSystemService {
             System.out.println("the result is " + currentTarget.toString() + ", score: " + currentScore);
             closeTask();
         } else if (currentTarget.getIteratorCount() >= maxIteratorCount) {
-            System.out.println("[ERROR]: The task has been calculated too many times, but don't get a result");
+            //System.out.println("[ERROR]: The task has been calculated too many times, but don't get a result");
         } else {
             currentRegion = splitAndSelectRegion(maxDistance);
             if (currentRegion == null) {
-                System.out.println("[ERROR]: No suitable result!!");
+                //System.out.println("[ERROR]: No suitable result!!");
                 return;
             }
             // prepare for the next calculation
@@ -244,11 +244,11 @@ public class DsdcoSystemService {
             }
             region.setBestVariables(bestVariables);
             region.setMinTargetFunValue(resultInUpperRegion.getScore());
-            System.out.println("New Region add to the priority queue: ");
-            System.out.println(Arrays.toString(region.getUpperLim()));
-            System.out.println(Arrays.toString(region.getLowerLim()));
+            //System.out.println("New Region add to the priority queue: ");
+            //System.out.println(Arrays.toString(region.getUpperLim()));
+            //System.out.println(Arrays.toString(region.getLowerLim()));
             priorityQueue.offer(region);
-            System.out.println("Region priority queue size: " + priorityQueue.size());
+            //System.out.println("Region priority queue size: " + priorityQueue.size());
         }
     }
 
@@ -317,10 +317,12 @@ public class DsdcoSystemService {
     }
 
     private void printMessage() {
-        System.out.println("The target of this iterator is: \n" + currentTarget);
-        System.out.println("Current region: ");
-        System.out.println(Arrays.toString(currentRegion.getUpperLim()));
-        System.out.println(Arrays.toString(currentRegion.getLowerLim()));
-        System.out.println("The size of region queue is: " + priorityQueue.size());
+        if (iteratorCount % 10 == 0)
+        System.out.println(currentRegion.getMinTargetFunValue());
+        //System.out.println("The target of this iterator is: \n" + currentTarget);
+        //System.out.println("Current region: ");
+        //System.out.println(Arrays.toString(currentRegion.getUpperLim()));
+        //System.out.println(Arrays.toString(currentRegion.getLowerLim()));
+        //System.out.println("The size of region queue is: " + priorityQueue.size());
     }
 }

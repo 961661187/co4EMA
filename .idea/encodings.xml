@@ -4,14 +4,10 @@
     <file url="file://$PROJECT_DIR$/calculate-DSDCO/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/calculate-DSDCO/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/calculate-PGA/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/co-log/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/co-performance/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/co-power/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/co-strength/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/co-system/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/co-task/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ema-ga/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/emd-dsdco-system/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/model-document/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/model-file/src/main/java" charset="UTF-8" />

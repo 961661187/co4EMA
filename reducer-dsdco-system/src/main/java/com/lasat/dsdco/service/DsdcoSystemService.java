@@ -12,6 +12,7 @@ import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -46,37 +47,20 @@ public class DsdcoSystemService {
     private final int VARIABLES_COUNT = 7;
     private final int DISCIPLINARY_COUNT = 2;
     // the convergence speed depends on the value of this variable
-    private double regionThreshold = 0.01;
-
+    private double regionThreshold = 0.05;
     //origin upper and lower limit of the region
     private final Double[] originLowerLim = new Double[]{3.5, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
     private final Double[] originUpperLim = new Double[]{3.6, 0.8, 28.0, 8.3, 8.3, 3.9, 5.5};
 
+    @Value("${spring.redis.host}")
+    private String host;
+    @Value("${spring.redis.port}")
+    private String port;
+    @Value("${spring.redis.password}")
+    private String password;
+
     @Autowired
     private RegionCalculateService regionCalculateService;
-
-    /**
-     * initialize the priority queue
-     */
-    @PostConstruct
-    public void initializeRedisPriorityQueue() {
-        Comparator<DsdcoRegion> regionComparator = new Comparator<DsdcoRegion>() {
-            @Override
-            public int compare(DsdcoRegion region1, DsdcoRegion region2) {
-                Double minTargetFunValue1 = region1 == null ? 0 : region1.getMinTargetFunValue();
-                Double minTargetFunValue2 = region2 == null ? 0 : region2.getMinTargetFunValue();
-                if (minTargetFunValue1 > minTargetFunValue2) return 1;
-                else if (minTargetFunValue1.equals(minTargetFunValue2)) return 0;
-                else return -1;
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                return false;
-            }
-        };
-        this.priorityQueue = new RedisPriorityQueueUtil<>(VARIABLES_COUNT, currentTaskId, regionComparator, 1000);
-    }
 
     /**
      * initialize the consumer
@@ -134,6 +118,23 @@ public class DsdcoSystemService {
      */
     @Async
     public void startTask() {
+        Comparator<DsdcoRegion> regionComparator = new Comparator<DsdcoRegion>() {
+            @Override
+            public int compare(DsdcoRegion region1, DsdcoRegion region2) {
+                Double minTargetFunValue1 = region1 == null ? 0 : region1.getMinTargetFunValue();
+                Double minTargetFunValue2 = region2 == null ? 0 : region2.getMinTargetFunValue();
+                if (minTargetFunValue1 > minTargetFunValue2) return 1;
+                else if (minTargetFunValue1.equals(minTargetFunValue2)) return 0;
+                else return -1;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }
+        };
+        this.priorityQueue = new RedisPriorityQueueUtil<>(VARIABLES_COUNT, currentTaskId, regionComparator, 10000, host, port, password);
+
         // initialize the region
         DsdcoRegion originRegion = new DsdcoRegion();
         originRegion.setLowerLim(Arrays.copyOf(originLowerLim, originLowerLim.length));
@@ -314,7 +315,9 @@ public class DsdcoSystemService {
     public void closeTask() {
         closestPointMap.clear();
         iteratorCount = 0;
-        priorityQueue.clear();
+        if (priorityQueue != null) {
+            priorityQueue.clear();
+        }
         currentTaskId = null;
         currentTarget = null;
         currentScore = .0;

@@ -7,4 +7,5 @@ com\lasat\dsdco\config\RedissonConfig.class
 com\lasat\dsdco\controller\ReducerTaskController.class
 com\lasat\dsdco\util\PointUtil.class
 com\lasat\dsdco\service\calculate\point\SqpBestPointService.class
+com\lasat\dsdco\service\calculate\redission\RedisPriorityQueueUtil.class
 com\lasat\dsdco\ReducerDsdcoApplication.class

@@ -1,11 +1,12 @@
 package com.lasat.dsdco.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lasat.dsdco.bean.DsdcoRegion;
-import com.lasat.dsdco.bean.DsdcoTarget;
+import com.lasat.dsdco.bean.Space;
+import com.lasat.dsdco.bean.Point;
 import com.lasat.dsdco.bean.OptimizationResult;
 import com.lasat.dsdco.service.calculate.RegionCalculateService;
 import com.lasat.dsdco.service.calculate.redission.RedisPriorityQueueUtil;
+import com.lasat.dsdco.service.calculate.redission.RedisPriorityQueueUtilImpl;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
@@ -28,7 +29,7 @@ public class DsdcoSystemService {
     private final ResourceBundle mqConfig = ResourceBundle.getBundle("mqConfig");
     private final DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(mqConfig.getString("consumerGroup"));
     // the closest point to the targetPoint of each disciplinary
-    private final HashMap<String, DsdcoTarget> closestPointMap = new HashMap<>(2);
+    private final HashMap<String, Point> closestPointMap = new HashMap<>(2);
     // reentrant lock is used to ensure only one thread can operate the regions
     private final ReentrantLock lock = new ReentrantLock();
     // iterator count and current task id are deemed as idempotent token
@@ -36,18 +37,18 @@ public class DsdcoSystemService {
     private Long currentTaskId = null;
     private Double currentScore = .0;
     // Priority queue based on redis
-    private RedisPriorityQueueUtil<DsdcoRegion> priorityQueue;
+    private RedisPriorityQueueUtil<Space> priorityQueue;
     // current system target point
-    private DsdcoTarget currentTarget;
+    private Point currentTarget;
     // current region
-    private DsdcoRegion currentRegion;
+    private Space currentRegion;
     // SystemName
     private final String SYSTEM_NAME = "reducer-system";
     // the number of variables
     private final int VARIABLES_COUNT = 7;
     private final int DISCIPLINARY_COUNT = 2;
     // the convergence speed depends on the value of this variable
-    private double regionThreshold = 0.05;
+    private double regionThreshold = 0.1;
     //origin upper and lower limit of the region
     private final Double[] originLowerLim = new Double[]{3.5, 0.7, 17.0, 7.3, 7.3, 2.9, 5.0};
     private final Double[] originUpperLim = new Double[]{3.6, 0.8, 28.0, 8.3, 8.3, 3.9, 5.5};
@@ -79,19 +80,19 @@ public class DsdcoSystemService {
                 // the closest point of a disciplinary calculator
                 String pointJson = new String(message.getBody());
                 ObjectMapper jsonMapper = new ObjectMapper();
-                DsdcoTarget dsdcoTarget = null;
+                Point point = null;
                 try {
-                    dsdcoTarget = jsonMapper.readValue(pointJson, DsdcoTarget.class);
+                    point = jsonMapper.readValue(pointJson, Point.class);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (dsdcoTarget != null
-                        && dsdcoTarget.getTaskId().equals(currentTaskId)
-                        && dsdcoTarget.getIteratorCount().equals(iteratorCount)
-                        && !closestPointMap.containsKey(dsdcoTarget.getDisciplinaryName())) {
+                if (point != null
+                        && point.getTaskId().equals(currentTaskId)
+                        && point.getIteratorCount().equals(iteratorCount)
+                        && !closestPointMap.containsKey(point.getDisciplinaryName())) {
                     lock.lock();
                     try {
-                        closestPointMap.put(dsdcoTarget.getDisciplinaryName(), dsdcoTarget);
+                        closestPointMap.put(point.getDisciplinaryName(), point);
                         //System.out.println("Point map has been updated: " + closestPointMap);
                         checkDisciplinaryResult();
                     } catch (Exception e) {
@@ -100,7 +101,7 @@ public class DsdcoSystemService {
                         lock.unlock();
                     }
                 } else {
-                    System.out.println("Duplicate message received: " + dsdcoTarget);
+                    System.out.println("Duplicate message received: " + point);
                 }
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
@@ -118,9 +119,9 @@ public class DsdcoSystemService {
      */
     @Async
     public void startTask() {
-        Comparator<DsdcoRegion> regionComparator = new Comparator<DsdcoRegion>() {
+        Comparator<Space> regionComparator = new Comparator<Space>() {
             @Override
-            public int compare(DsdcoRegion region1, DsdcoRegion region2) {
+            public int compare(Space region1, Space region2) {
                 Double minTargetFunValue1 = region1 == null ? 0 : region1.getMinTargetFunValue();
                 Double minTargetFunValue2 = region2 == null ? 0 : region2.getMinTargetFunValue();
                 if (minTargetFunValue1 > minTargetFunValue2) return 1;
@@ -133,10 +134,10 @@ public class DsdcoSystemService {
                 return false;
             }
         };
-        this.priorityQueue = new RedisPriorityQueueUtil<>(VARIABLES_COUNT, currentTaskId, regionComparator, 10000, host, port, password);
+        this.priorityQueue = new RedisPriorityQueueUtilImpl<>(VARIABLES_COUNT, currentTaskId, regionComparator, 10000, host, port, password);
 
         // initialize the region
-        DsdcoRegion originRegion = new DsdcoRegion();
+        Space originRegion = new Space();
         originRegion.setLowerLim(Arrays.copyOf(originLowerLim, originLowerLim.length));
         originRegion.setUpperLim(Arrays.copyOf(originUpperLim, originUpperLim.length));
 
@@ -155,10 +156,10 @@ public class DsdcoSystemService {
 
         // send the region to message queue
         iteratorCount++;
-        DsdcoTarget dsdcoTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, originRegion.getBestVariables());
-        currentTarget = dsdcoTarget;
+        Point point = new Point(currentTaskId, SYSTEM_NAME, iteratorCount, originRegion.getBestVariables());
+        currentTarget = point;
         currentScore = originResult.getScore();
-        regionCalculateService.sendTarget2Disciplinary(dsdcoTarget);
+        regionCalculateService.sendTarget2Disciplinary(point);
         printMessage();
     }
 
@@ -179,8 +180,8 @@ public class DsdcoSystemService {
         if (closestPointMap.size() < DISCIPLINARY_COUNT) return;
         int constraintMeetCount = 0;
         double maxDistance = 0;
-        for (Map.Entry<String, DsdcoTarget> disPointEntry : closestPointMap.entrySet()) {
-            DsdcoTarget disPoint = disPointEntry.getValue();
+        for (Map.Entry<String, Point> disPointEntry : closestPointMap.entrySet()) {
+            Point disPoint = disPointEntry.getValue();
             if (!disPoint.equals(currentTarget)) {
                 maxDistance = Math.max(maxDistance, getDistance(disPoint, currentTarget));
             } else {
@@ -201,7 +202,7 @@ public class DsdcoSystemService {
             }
             // prepare for the next calculation
             iteratorCount++;
-            currentTarget = new DsdcoTarget(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
+            currentTarget = new Point(currentTaskId, SYSTEM_NAME, iteratorCount, currentRegion.getBestVariables());
             currentScore = -currentRegion.getMinTargetFunValue();
             closestPointMap.clear();
             regionCalculateService.sendTarget2Disciplinary(currentTarget);
@@ -214,7 +215,7 @@ public class DsdcoSystemService {
      *
      * @return the best region
      */
-    private DsdcoRegion splitAndSelectRegion(double maxDistance) {
+    private Space splitAndSelectRegion(double maxDistance) {
         double excludeDistance = Math.max(maxDistance * Math.sqrt(VARIABLES_COUNT) / VARIABLES_COUNT, regionThreshold);
         Double[] currentVariables = currentTarget.getVariables();
         currentRegion = priorityQueue.poll();
@@ -227,14 +228,14 @@ public class DsdcoSystemService {
             double newUpperLim = Math.min(currentVariables[i] + excludeDistance, currentUpperLim[i]);
 
             // get the upper region and add it to the priority queue if it is suitable
-            DsdcoRegion upperRegion = new DsdcoRegion();
+            Space upperRegion = new Space();
             Double[] lowerLimOfUpperRegion = Arrays.copyOf(currentLowerLim, VARIABLES_COUNT);
             lowerLimOfUpperRegion[i] = newUpperLim;
             Double[] upperLimOfUpperRegion = Arrays.copyOf(currentUpperLim, VARIABLES_COUNT);
             addRegionToQueue(upperRegion, upperLimOfUpperRegion, lowerLimOfUpperRegion);
 
             // get the lower region and add it to the priority queue if it is suitable
-            DsdcoRegion lowerRegion = new DsdcoRegion();
+            Space lowerRegion = new Space();
             Double[] lowerLimOfLowerRegion = Arrays.copyOf(currentLowerLim, VARIABLES_COUNT);
             Double[] upperLimOfLowerRegion = Arrays.copyOf(currentUpperLim, VARIABLES_COUNT);
             upperLimOfLowerRegion[i] = newLowerLim;
@@ -254,7 +255,7 @@ public class DsdcoSystemService {
      * @param upperLim the upper limit array of the region
      * @param lowerLim the lower limit array pf the region
      */
-    private void addRegionToQueue(DsdcoRegion region, Double[] upperLim, Double[] lowerLim) {
+    private void addRegionToQueue(Space region, Double[] upperLim, Double[] lowerLim) {
         region.setUpperLim(upperLim);
         region.setLowerLim(lowerLim);
         if (checkRegionLogical(region)) {
@@ -275,7 +276,7 @@ public class DsdcoSystemService {
      * @param region the region to be checked
      * @return whether the region is suitable for next round of calculation
      */
-    private boolean checkRegionLogical(DsdcoRegion region) {
+    private boolean checkRegionLogical(Space region) {
         Double[] upperLim = region.getUpperLim();
         Double[] lowerLim = region.getLowerLim();
 
@@ -293,7 +294,7 @@ public class DsdcoSystemService {
      * @param point2 point2
      * @return the distance between 2 points
      */
-    private double getDistance(DsdcoTarget point1, DsdcoTarget point2) {
+    private double getDistance(Point point1, Point point2) {
         Double[] variables1 = point1.getVariables();
         Double[] variables2 = point2.getVariables();
         int length = variables1.length;
@@ -322,12 +323,12 @@ public class DsdcoSystemService {
         currentTarget = null;
         currentScore = .0;
         currentRegion = null;
-        DsdcoTarget dsdcoTarget = new DsdcoTarget();
+        Point point = new Point();
         // -1 means current task is finished, notify the disciplinary calculator that the task is finished
         // and clear the variables
-        dsdcoTarget.setIteratorCount(-1);
-        dsdcoTarget.setDisciplinaryName(SYSTEM_NAME);
-        regionCalculateService.sendTarget2Disciplinary(dsdcoTarget);
+        point.setIteratorCount(-1);
+        point.setDisciplinaryName(SYSTEM_NAME);
+        regionCalculateService.sendTarget2Disciplinary(point);
     }
 
     @PreDestroy

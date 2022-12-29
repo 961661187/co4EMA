@@ -1,13 +1,13 @@
 package com.lasat.dsdco.util;
 
-import com.lasat.dsdco.bean.DsdcoTarget;
+import com.lasat.dsdco.bean.Point;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class JsonUtil {
 
-    public static Map<String, Object> convertTargetToMap(DsdcoTarget target) {
+    public static Map<String, Object> convertTargetToMap(Point target) {
         Map<String, Object> result = new HashMap<>();
 
         Long taskId = target.getTaskId() == null ? -1 : target.getTaskId();

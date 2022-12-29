@@ -1,6 +1,13 @@
-E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\bean\DsdcoTarget.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\node\MessageService.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\node\SpaceStorageService.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\util\ObjectMapperSingleton.java
 E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\bean\OptimizationResult.java
-E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\mq\test\ConsumerTest.java
-E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\bean\DsdcoRegion.java
 E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\mq\test\ProducerTest.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\node\DisciplinaryCalculator.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\bean\Point.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\node\SpaceService.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\mq\test\ConsumerTest.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\util\ConvertUtil.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\bean\Space.java
+E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\node\SystemCalculator.java
 E:\co4EMA\calculate-DSDCO\src\main\java\com\lasat\dsdco\util\JsonUtil.java

@@ -50,8 +50,8 @@ public class EMASystemProblem extends AbstractDoubleProblem {
         /**
          * The object function can be changed here
          */
-        //solution.setObjective(0, getMass(variables) + 1000 * Math.max( getTs(variables) - 0.8410799268363229, 0));
-        solution.setObjective(0, Math.max(getMass(variables) - 43, 0) + getTs(variables));
+        //solution.setObjective(0, getMass(variables) + 1000 * Math.max( getTs(variables) - 0.447, 0));
+        solution.setObjective(0, Math.max(getMass(variables) - 51, 0) + getTs(variables));
     }
 
     public double getMass(double[] variables) {
@@ -70,7 +70,7 @@ public class EMASystemProblem extends AbstractDoubleProblem {
         return inverseNormalize(network.compute(input).getData(0));
     }
 
-    private double getMassOfMotor(SamplePoint samplePoint) {
+    public double getMassOfMotor(SamplePoint samplePoint) {
         return 0.05 * (1.3552 + 0.0213 * voltage / samplePoint.getR()+ 0.8262 * pn * samplePoint.getFlux() * voltage / samplePoint.getR());
     }
 
@@ -93,7 +93,7 @@ public class EMASystemProblem extends AbstractDoubleProblem {
         return result;
     }
 
-    private double getMassOfScrew(SamplePoint samplePoint) {
+    public double getMassOfScrew(SamplePoint samplePoint) {
         return 0.25 * Math.PI * materialDensity * (samplePoint.getDs() * samplePoint.getDs() * 0.5);
     }
 
@@ -112,7 +112,7 @@ public class EMASystemProblem extends AbstractDoubleProblem {
         return data * 800 + 200;
     }
 
-    private SamplePoint arr2samplePoint(double[] variables) {
+    public SamplePoint arr2samplePoint(double[] variables) {
         double ld = variables[0];
         double rs = variables[1];
         double flux = variables[2];

@@ -25,6 +25,10 @@
         <module>test-dsdco-disciplinary-1</module>
         <module>ema-ga</module>
         <module>emd-dsdco-system</module>
+        <module>common-fdsdco</module>
+        <module>test-fdsdco-system</module>
+        <module>test-fdsdco-disciplinary-1</module>
+        <module>test-fdsdco-disciplinary-2</module>
     </modules>
 
     <parent>

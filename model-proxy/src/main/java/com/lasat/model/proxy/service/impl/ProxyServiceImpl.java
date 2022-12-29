@@ -124,6 +124,8 @@ public class ProxyServiceImpl implements ProxyService {
         train(NETWORK_NAME_COST, network4Cost, input, output4Cost, length);
     }
 
+
+
     private void train(String networkName, BasicNetwork network, double[][] input, double[][] output, int length) {
         //create a network
         network.addLayer(new BasicLayer(null, true, 6));

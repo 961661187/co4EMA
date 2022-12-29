@@ -3,17 +3,21 @@ package com.lasat.dsdco.bean;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class DsdcoRegion implements Serializable {
+public class Space implements Serializable {
 
     private Double[] upperLim;
     private Double[] lowerLim;
     private Double minTargetFunValue;
     private Double[] bestVariables;
+    private Boolean spaceValid;
+    private String disciplinaryName;
+    private Long taskId;
+    private Integer iteratorCount;
 
-    public DsdcoRegion() {
+    public Space() {
     }
 
-    public DsdcoRegion(Double[] upperLim, Double[] lowerLim) {
+    public Space(Double[] upperLim, Double[] lowerLim) {
         this.upperLim = upperLim;
         this.lowerLim = lowerLim;
     }
@@ -50,13 +54,49 @@ public class DsdcoRegion implements Serializable {
         this.bestVariables = bestVariables;
     }
 
+    public Boolean getValid() {
+        return spaceValid;
+    }
+
+    public void setValid(Boolean valid) {
+        spaceValid = valid;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public Integer getIteratorCount() {
+        return iteratorCount;
+    }
+
+    public void setIteratorCount(Integer iteratorCount) {
+        this.iteratorCount = iteratorCount;
+    }
+
+    public String getDisciplinaryName() {
+        return disciplinaryName;
+    }
+
+    public void setDisciplinaryName(String disciplinaryName) {
+        this.disciplinaryName = disciplinaryName;
+    }
+
     @Override
     public String toString() {
-        return "DsdcoRegion{" +
+        return "Space{" +
                 "upperLim=" + Arrays.toString(upperLim) +
                 ", lowerLim=" + Arrays.toString(lowerLim) +
                 ", minTargetFunValue=" + minTargetFunValue +
                 ", bestVariables=" + Arrays.toString(bestVariables) +
+                ", isValid=" + spaceValid +
+                ", disciplinaryName='" + disciplinaryName + '\'' +
+                ", taskId=" + taskId +
+                ", iteratorCount=" + iteratorCount +
                 '}';
     }
 }

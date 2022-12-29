@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/calculate-DSDCO/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/calculate-DSDCO/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/calculate-PGA/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-fdsdco/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ema-ga/src/main/java" charset="UTF-8" />
@@ -21,6 +22,9 @@
     <file url="file://$PROJECT_DIR$/test-dsdco-disciplinary-1/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test-dsdco-disciplinary-2/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test-dsdco-system/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test-fdsdco-disciplinary-1/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test-fdsdco-disciplinary-2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test-fdsdco-system/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web-gateway/src/main/java" charset="UTF-8" />
   </component>
 </project>

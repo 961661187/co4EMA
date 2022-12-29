@@ -1,7 +1,7 @@
 package com.lasat.dsdco.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lasat.dsdco.bean.DsdcoTarget;
+import com.lasat.dsdco.bean.Point;
 import com.lasat.dsdco.bean.OptimizationResult;
 import com.lasat.dsdco.util.JsonUtil;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -63,7 +63,7 @@ public class DsdcoDisciplinaryService {
                 for (MessageExt messageExt : list) {
                     String targetJson = new String(messageExt.getBody());
                     System.out.println("Message received: " + targetJson);
-                    DsdcoTarget target = getTargetFromJson(targetJson);
+                    Point target = getTargetFromJson(targetJson);
                     if (target != null) {
                         if (currentTaskId == null || currentIteratorCount == null) {
                             currentTaskId = target.getTaskId();
@@ -83,7 +83,7 @@ public class DsdcoDisciplinaryService {
                                 System.out.println("Current task id: " + currentTaskId);
                                 System.out.println("Current iterator: " + currentIteratorCount);
                             } else {
-                                DsdcoTarget closetPoint = getClosetPointBySQP(target);
+                                Point closetPoint = getClosetPointBySQP(target);
                                 sendResultToSystemCalculator(closetPoint);
                                 System.out.println("The closet point is: " + closetPoint);
                                 currentIteratorCount++;
@@ -114,10 +114,10 @@ public class DsdcoDisciplinaryService {
      * @param json the message in json type from message queue
      * @return dsdco target
      */
-    public DsdcoTarget getTargetFromJson(String json) {
+    public Point getTargetFromJson(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(json, DsdcoTarget.class);
+            return objectMapper.readValue(json, Point.class);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -135,12 +135,12 @@ public class DsdcoDisciplinaryService {
     /**
      * get the closet point from given point by parallel genetic algorithm
      *
-     * @param dsdcoTarget the given target
+     * @param point the given target
      * @return closet point
      */
-    public DsdcoTarget getClosetPointBySQP(DsdcoTarget dsdcoTarget) {
-        dsdcoTarget.setDisciplinaryName(CURRENT_DISCIPLINARY_NAME);
-        Double[] targetVarOrigin = dsdcoTarget.getVariables();
+    public Point getClosetPointBySQP(Point point) {
+        point.setDisciplinaryName(CURRENT_DISCIPLINARY_NAME);
+        Double[] targetVarOrigin = point.getVariables();
         double[] targetVal = new double[targetVarOrigin.length];
         for (int i = 0; i < targetVal.length; i++) {
             targetVal[i] = targetVarOrigin[i];
@@ -152,9 +152,9 @@ public class DsdcoDisciplinaryService {
     /**
      * send the calculate result to system calculator
      *
-     * @param dsdcoTarget the closet point got by PGA
+     * @param point the closet point got by PGA
      */
-    public void sendResultToSystemCalculator(DsdcoTarget dsdcoTarget) {
+    public void sendResultToSystemCalculator(Point point) {
         try {
             // set topic and tag of the message
             String topic = mqConfig.getString("disciplinary2SystemTopic");
@@ -162,7 +162,7 @@ public class DsdcoDisciplinaryService {
 
             // convert the message to json
             ObjectMapper jsonMapper = new ObjectMapper();
-            Map<String, Object> targetMap = JsonUtil.convertTargetToMap(dsdcoTarget);
+            Map<String, Object> targetMap = JsonUtil.convertTargetToMap(point);
             String targetJson = jsonMapper.writeValueAsString(targetMap);
 
             // create a message
@@ -180,11 +180,11 @@ public class DsdcoDisciplinaryService {
      * convert the optimization result to dsdco target
      * @return the dsdco target converted from optimization result
      */
-    private DsdcoTarget convertOptimizationResult2DsdcoTarget(OptimizationResult result) {
+    private Point convertOptimizationResult2DsdcoTarget(OptimizationResult result) {
         Double[] variables = new Double[result.getVariables().length];
         for (int i = 0; i < variables.length; i++) {
             variables[i] = result.getVariables()[i];
         }
-        return new DsdcoTarget(currentTaskId, CURRENT_DISCIPLINARY_NAME, currentIteratorCount, variables);
+        return new Point(currentTaskId, CURRENT_DISCIPLINARY_NAME, currentIteratorCount, variables);
     }
 }

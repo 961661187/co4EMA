@@ -4,8 +4,10 @@ com\lasat\dsdco\service\DsdcoSystemService$1.class
 com\lasat\dsdco\service\calculate\point\GaBestPointService.class
 com\lasat\dsdco\service\DsdcoSystemService.class
 com\lasat\dsdco\config\RedissonConfig.class
+com\lasat\dsdco\service\calculate\redission\RedisPriorityQueueUtilImpl.class
 com\lasat\dsdco\controller\ReducerTaskController.class
 com\lasat\dsdco\util\PointUtil.class
+com\lasat\dsdco\service\calculate\redission\OptimizedPriorityQueueImpl.class
 com\lasat\dsdco\service\calculate\point\SqpBestPointService.class
 com\lasat\dsdco\service\calculate\redission\RedisPriorityQueueUtil.class
 com\lasat\dsdco\ReducerDsdcoApplication.class

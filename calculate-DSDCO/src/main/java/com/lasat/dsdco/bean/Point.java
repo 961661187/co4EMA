@@ -5,17 +5,18 @@ import java.util.Arrays;
 /**
  * the message send to each disciplinary consumer by json
  */
-public class DsdcoTarget {
+public class Point {
 
     private Long taskId;
     private String disciplinaryName;
     private Integer iteratorCount;
     private Double[] variables;
+    private Double score;
 
-    public DsdcoTarget() {
+    public Point() {
     }
 
-    public DsdcoTarget(Long taskId, String disciplinaryName, Integer iteratorCount, Double[] variables) {
+    public Point(Long taskId, String disciplinaryName, Integer iteratorCount, Double[] variables) {
         this.taskId = taskId;
         this.disciplinaryName = disciplinaryName;
         this.iteratorCount = iteratorCount;
@@ -46,6 +47,14 @@ public class DsdcoTarget {
         this.iteratorCount = iteratorCount;
     }
 
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
     public Double[] getVariables() {
         return variables;
     }
@@ -66,8 +75,8 @@ public class DsdcoTarget {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DsdcoTarget) {
-            DsdcoTarget other = (DsdcoTarget) obj;
+        if (obj instanceof Point) {
+            Point other = (Point) obj;
             Double[] otherVar = other.getVariables();
             for (int i = 0; i < otherVar.length; i++) {
                 if (!otherVar[i].equals(variables[i])) return false;

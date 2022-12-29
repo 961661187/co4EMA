@@ -1,0 +1,8 @@
+com\lasat\fdsdco\service\MqService4System.class
+com\lasat\fdsdco\config\CalculationConfig.class
+com\lasat\fdsdco\service\SimpleSpaceStorageService.class
+com\lasat\fdsdco\service\SpaceServiceImpl.class
+com\lasat\fdsdco\controller\TestTaskController.class
+com\lasat\fdsdco\TestDsdcoApplication.class
+com\lasat\fdsdco\service\FdsdcoSystemService.class
+com\lasat\fdsdco\service\SystemCalculatorService.class

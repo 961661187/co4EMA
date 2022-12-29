@@ -4,9 +4,9 @@ spring:
   application:
     name: reducerSystemCalculator
   redis:
-    host: 47.94.88.239
+    host: 127.0.0.1
     port: 6379
-    password: Passw0rd4Red1s
+    password: 123456
   datasource:
     username: root
     password: Passw0rd4MySQ1

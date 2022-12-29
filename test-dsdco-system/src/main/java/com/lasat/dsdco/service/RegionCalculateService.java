@@ -1,8 +1,8 @@
 package com.lasat.dsdco.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lasat.dsdco.bean.DsdcoRegion;
-import com.lasat.dsdco.bean.DsdcoTarget;
+import com.lasat.dsdco.bean.Space;
+import com.lasat.dsdco.bean.Point;
 import com.lasat.dsdco.bean.OptimizationResult;
 import com.lasat.dsdco.util.JsonUtil;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -47,17 +47,17 @@ public class RegionCalculateService {
 
     /**
      * get the best optimization result in given region
-     * @param dsdcoRegion region
+     * @param space region
      * @return min target function and its variables
      */
-    public OptimizationResult getResultInRegion(DsdcoRegion dsdcoRegion) {
-        int length = dsdcoRegion.getUpperLim().length;
+    public OptimizationResult getResultInRegion(Space space) {
+        int length = space.getUpperLim().length;
         double[] upperLim = new double[length];
         double[] lowerLim = new double[length];
 
         for (int i = 0; i < length; i++) {
-            upperLim[i] = dsdcoRegion.getUpperLim()[i];
-            lowerLim[i] = dsdcoRegion.getLowerLim()[i];
+            upperLim[i] = space.getUpperLim()[i];
+            lowerLim[i] = space.getLowerLim()[i];
         }
 
         OptimizationResult resultInRegion = bestPointService.getResultInRegion(upperLim, lowerLim);
@@ -72,7 +72,7 @@ public class RegionCalculateService {
      *
      * @param target the target point get by parallel genetic algorithm
      */
-    public void sendTarget2Disciplinary(DsdcoTarget target) {
+    public void sendTarget2Disciplinary(Point target) {
         try {
             // set topic and tag of the message
             String topic = mqConfig.getString("system2DisciplinaryTopicTest");

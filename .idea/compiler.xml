@@ -8,23 +8,27 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="model-document" />
+        <module name="web-gateway" />
+        <module name="calculate-DSDCO" />
         <module name="model-sample" />
         <module name="model-summary" />
-        <module name="test-dsdco-disciplinary-2" />
+        <module name="test-fdsdco-disciplinary-2" />
         <module name="model-proxy" />
-        <module name="common" />
+        <module name="common-fdsdco" />
         <module name="test-dsdco-system" />
+        <module name="test-dsdco-disciplinary-2" />
         <module name="test-dsdco-disciplinary-1" />
-        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="test-fdsdco-disciplinary-1" />
         <module name="ema-ga" />
         <module name="common-db" />
         <module name="model-file" />
-        <module name="reducer-dsdco-disciplinary-2" />
+        <module name="reducer-dsdco-system" />
         <module name="eureka" />
         <module name="emd-dsdco-system" />
-        <module name="web-gateway" />
-        <module name="reducer-dsdco-system" />
-        <module name="calculate-DSDCO" />
+        <module name="reducer-dsdco-disciplinary-2" />
+        <module name="reducer-dsdco-disciplinary-1" />
+        <module name="test-fdsdco-system" />
+        <module name="common" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -47,6 +51,7 @@
       <module name="co-task" options="-parameters" />
       <module name="common" options="-parameters" />
       <module name="common-db" options="-parameters" />
+      <module name="common-fdsdco" options="-parameters" />
       <module name="ema-ga" options="-parameters" />
       <module name="emd-dsdco-system" options="-parameters" />
       <module name="eureka" options="-parameters" />
@@ -61,6 +66,9 @@
       <module name="test-dsdco-disciplinary-1" options="-parameters" />
       <module name="test-dsdco-disciplinary-2" options="-parameters" />
       <module name="test-dsdco-system" options="-parameters" />
+      <module name="test-fdsdco-disciplinary-1" options="-parameters" />
+      <module name="test-fdsdco-disciplinary-2" options="-parameters" />
+      <module name="test-fdsdco-system" options="-parameters" />
       <module name="web-gateway" options="-parameters" />
     </option>
   </component>
